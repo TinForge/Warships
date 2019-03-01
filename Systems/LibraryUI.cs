@@ -10,13 +10,13 @@ public class LibraryUI : MonoBehaviour
 	private static LibraryUI instance;
 
 
-	[SerializeField] public Transform world;
 	[SerializeField] public Transform overlay;
 
 
 	[SerializeField] public GameObject shipPanel;
 	[SerializeField] public GameObject classTag;
 	[SerializeField] public GameObject healthBar;
+	[SerializeField] public GameObject damageCounter;
 
 	void Awake()
     {
@@ -59,6 +59,14 @@ public class LibraryUI : MonoBehaviour
 	public static Transform CreateHealthBar(Transform parent)
 	{
 		GameObject t = Instantiate(instance.healthBar, parent);
+		return t.transform;
+	}
+
+	public static Transform CreateDamageCounter(Transform parent, int damage)
+	{
+		GameObject t = Instantiate(instance.damageCounter, instance.overlay);
+		t.GetComponent<PositionTracker>().SetTarget(parent);
+		t.GetComponent<TextMeshProUGUI>().text = damage +"";
 		return t.transform;
 	}
 

@@ -10,6 +10,8 @@ public class EngineController : MonoBehaviour
 	private Rigidbody rb;
 	private BoatProbes bp;
 
+	public Vector3 Velocity { get { return rb.velocity; } }
+	public float Speed { get { return rb.velocity.magnitude; } }
 	private bool Grounded { get { return transform.position.y < 7.5f; } }
 	
 	void Awake()
@@ -20,13 +22,12 @@ public class EngineController : MonoBehaviour
 
 	public void Move(float forwards, float sideways)
 	{
-		if (Grounded)
 		bp.FixedUpdateEngine(forwards, sideways);
 	}
 
 }
 
-/* This copy goes in BoatProbes
+/* This copy goes in BoatProbes in case it gets an update
  public void FixedUpdateEngine(float forwards, float sideways)
     {
         Vector3 forcePosition = RB.position;

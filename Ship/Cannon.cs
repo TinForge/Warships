@@ -21,7 +21,7 @@ public class Cannon : MonoBehaviour, IArmament
 
 	//Internal
 	const float MaxElevation = 45F;
-	const float MinElevation = -5F;
+	const float MinElevation = -15F;
 	private float traverseSpeed = 25.0f;
 	private float bufferAngle = 5.0f;
 	private float acceleration_Time = 0.2f;

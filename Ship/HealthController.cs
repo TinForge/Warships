@@ -36,6 +36,11 @@ public class HealthController : MonoBehaviour
 		if (health == 0)
 			return;
 
+		CheckSink();
+	}
+
+	public void CheckSink()
+	{
 		float z = transform.eulerAngles.z;
 		if (z > 180)
 			z -= 360;
@@ -56,9 +61,13 @@ public class HealthController : MonoBehaviour
 		var m = damagedEffect.main;
 		m.startColor = new Color(190 / 255f, 190 / 255f, 190 / 255f, Ratio);
 		//Debug.Log(health);
-		if (health == 0)
+		if (health == 0) {
 			DisableShipControllers();
-
+		}
+		LibraryUI.CreateDamageCounter(transform, damage);
+		
+		if(GetComponent<PlayerShip>() !=null)
+			EZCameraShake.CameraShaker.Instance.ShakeOnce(3, 3, 0.5f, 0.5f);
 	}
 
 	private void DisableShipControllers()
@@ -66,6 +75,9 @@ public class HealthController : MonoBehaviour
 		Destroy(wc);
 		Destroy(ec);
 		ObjectPooler.instance.Instantiate(explosionEffect, transform.position, Quaternion.identity);
+
+		if (GetComponent<PlayerShip>() != null)
+			EZCameraShake.CameraShaker.Instance.ShakeOnce(3, 5, 1f, 5f);
 	}
 
 

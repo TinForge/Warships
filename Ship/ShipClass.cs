@@ -40,7 +40,10 @@ public class ShipClass : MonoBehaviour
 	{
 		Vector3 origin = transform.position + Vector3.up * 50;
 		Vector3 rectPos = Camera.main.WorldToScreenPoint(origin);
-		rectPos.z = Vector3.Distance(origin, Camera.main.transform.position);
+		if (rectPos.z > 0)
+			rectPos.z = Vector3.Distance(origin, Camera.main.transform.position);
+		else
+			rectPos = new Vector3(-100, -100, 0);
 		panel.position = rectPos;
 	}
 
