@@ -72,6 +72,9 @@ public class HealthController : MonoBehaviour
 
 	private void DisableShipControllers()
 	{
+		foreach (iDestruct i in GetComponentsInChildren<iDestruct>())
+			i.Destruct();
+
 		Destroy(wc);
 		Destroy(ec);
 		ObjectPooler.instance.Instantiate(explosionEffect, transform.position, Quaternion.identity);

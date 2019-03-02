@@ -47,8 +47,10 @@ public class DamageCounter : MonoBehaviour
 			offset += Vector3.up * 13 * (values.Count - thisValue);
 			thisValue = values.Count;
 		}
-		
+		Vector3 wtsp = Camera.main.WorldToScreenPoint(pt.Position);
+
+		transform.position = wtsp+offset; //pin to screen position
 		offset += Vector3.left * speed * Time.deltaTime;
-		transform.position = Vector3.Lerp(transform.position,Camera.main.WorldToScreenPoint(pt.Position) + offset, .05f);
+		transform.position = Vector3.Lerp(transform.position, wtsp + offset, .05f); //UI lerp effect
     }
 }

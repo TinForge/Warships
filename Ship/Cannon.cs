@@ -82,7 +82,7 @@ public class Cannon : MonoBehaviour, IArmament
 	{
 		float t = 0;
 		Vector3 from = cannons.localPosition;
-		Vector3 to = cannons.localPosition - Vector3.forward * 3;
+		Vector3 to = cannons.localPosition - exit.localPosition/4;
 		while(t<1) {
 			t += Time.deltaTime* RecoilRateIn;
 			cannons.localPosition = Vector3.Lerp(from, to, t);
