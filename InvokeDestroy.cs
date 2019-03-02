@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class InvokeDestroy : MonoBehaviour
 {
-	public int timer;
+	public int lifetime;
 
     void Start()
     {
-		Invoke("SelfDestruct", timer);
+		Invoke("SelfDestruct", lifetime);
     }
 
 	private void SelfDestruct()
