@@ -58,22 +58,31 @@ public class HealthController : MonoBehaviour
 		health = Mathf.Clamp(health - damage, 0, baseHealth);
 		OnHealthChange(Ratio);
 		bp.SetBuoyancy(Ratio);
-		var m = damagedEffect.main;
-		m.startColor = new Color(190 / 255f, 190 / 255f, 190 / 255f, Ratio);
-		//Debug.Log(health);
 		if (health == 0) {
 			DisableShipControllers();
 		}
 		LibraryUI.CreateDamageCounter(transform, damage);
-		
+
+		float magnitude = Mathf.Lerp(100, 750, damage) / 200;	//magnitude based on damage
+		float roughness = Mathf.Lerp(1,5, Ratio);					//roughness based on health remaining
+
 		if(GetComponent<PlayerShip>() !=null)
-			EZCameraShake.CameraShaker.Instance.ShakeOnce(3, 3, 0.5f, 0.5f);
+			EZCameraShake.CameraShaker.Instance.ShakeOnce(magnitude, roughness, 0.5f, 0.5f);
+	}
+
+	private void OnCollisionEnter(Collision collision)
+	{
+		if(collision.transform.tag == "Ship") {
+			Debug.Log(collision.relativeVelocity.magnitude * collision.rigidbody.mass);
+			if (collision.relativeVelocity.magnitude > 5)
+				ParseHit((int)(collision.relativeVelocity.magnitude * (collision.rigidbody.mass /1000)));
+		}
 	}
 
 	private void DisableShipControllers()
 	{
-		foreach (iDestruct i in GetComponentsInChildren<iDestruct>())
-			i.Destruct();
+		foreach (iDestroyable i in GetComponentsInChildren<iDestroyable>())
+			i.Destroy();
 
 		Destroy(wc);
 		Destroy(ec);

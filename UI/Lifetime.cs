@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Lifetime : MonoBehaviour, iDestruct
+public class Lifetime : MonoBehaviour, iDestroyable
 {
 	public bool onAwake;
 	public int lifetime;
@@ -13,7 +13,7 @@ public class Lifetime : MonoBehaviour, iDestruct
 		Invoke("SelfDestruct", lifetime);
     }
 
-	public void Destruct()
+	public void Destroy()
 	{
 		Invoke("SelfDestruct", lifetime);
 	}

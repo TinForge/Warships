@@ -4,7 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public class AlphaFader : MonoBehaviour, iDestruct
+public class FadeAlpha : MonoBehaviour, iDestroyable
 {
 
 	public bool onAwake;
@@ -49,7 +49,7 @@ public class AlphaFader : MonoBehaviour, iDestruct
 		onAwake = true;
 	}
 
-	public void Destruct()
+	public void Destroy()
 	{
 		onAwake = true;
 	}

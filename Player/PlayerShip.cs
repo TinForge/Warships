@@ -4,6 +4,8 @@ using System.Collections;
 ///Player Input for all ship components
 public class PlayerShip : MonoBehaviour
 {
+	public static PlayerShip instance;
+
 	private EngineController engine;
 	private WeaponsController weapons;
 
@@ -15,14 +17,17 @@ public class PlayerShip : MonoBehaviour
 
 	private bool scoped;
 
-	
+
+	private void Awake()
+	{
+		instance = this;
+	}
 
 	void Start()
 	{
 		camera = Camera.main;
 		engine = GetComponent<EngineController>();
 		weapons = GetComponentInChildren<WeaponsController>();
-
 
 	}
 

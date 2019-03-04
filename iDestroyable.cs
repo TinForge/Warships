@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface iDestruct
+public interface iDestroyable
 {
-	void Destruct();
+	void Destroy();
 }

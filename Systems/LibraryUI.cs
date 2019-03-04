@@ -15,6 +15,9 @@ public class LibraryUI : MonoBehaviour
 
 	[SerializeField] public GameObject shipPanel;
 	[SerializeField] public GameObject classTag;
+	[SerializeField] public GameObject levelTag;
+	[SerializeField] public GameObject distanceTag;
+	[SerializeField] public GameObject icon;
 	[SerializeField] public GameObject healthBar;
 	[SerializeField] public GameObject damageCounter;
 
@@ -53,6 +56,24 @@ public class LibraryUI : MonoBehaviour
 	{
 		GameObject t = Instantiate(instance.classTag, parent);
 		t.GetComponent<TextMeshProUGUI>().text = name;
+		return t.transform;
+	}
+
+	public static Transform CreateLevelTag(Transform parent)
+	{
+		GameObject t = Instantiate(instance.levelTag, parent);
+		return t.transform;
+	}
+
+	public static Transform CreateDistanceTag(Transform parent)
+	{
+		GameObject t = Instantiate(instance.distanceTag, parent);
+		return t.transform;
+	}
+
+	public static Transform CreateIcon(Transform parent)
+	{
+		GameObject t = Instantiate(instance.icon, parent);
 		return t.transform;
 	}
 

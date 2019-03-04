@@ -64,8 +64,12 @@ public class Cannon : MonoBehaviour, IArmament
 		reloading = true;
 		Invoke("Reload", reloadTime);
 		Vector3 velocity = HitTargetBySpeed(exit.position, point, Physics.gravity * projectileData.gravity, projectileData.speed);
-		//owner.GetComponent<Rigidbody>().AddForceAtPosition(-velocity*100, exit.position,ForceMode.Impulse); //recoil
+		//owner.GetComponent<Rigidbody>().AddForceAtPosition(-velocity, exit.position,ForceMode.Impulse); //recoil
+
+		float range = Vector3.Distance(Camera.main.transform.position, exit.position);
+		float magnitude = Mathf.Lerp(0, 2, 500/range);
 		EZCameraShake.CameraShaker.Instance.ShakeOnce(2, 2.5f, 0.25f, 0.6f);
+
 		for (int i= -1; i < 2; i++) {
 			GameObject projectile = ObjectPooler.instance.Instantiate(shell, exit.position+(Vector3.right*(i*2)), cannons.rotation);
 			projectile.GetComponent<Projectile>().Activate(projectileData, velocity);

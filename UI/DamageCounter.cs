@@ -33,7 +33,6 @@ public class DamageCounter : MonoBehaviour
 		values.Add(this);
 
 		thisValue = values.Count;
-
 	}
 
 	void OnDisable()
