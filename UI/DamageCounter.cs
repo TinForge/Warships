@@ -4,32 +4,23 @@ using UnityEngine;
 
 public class DamageCounter : MonoBehaviour
 {
-	private PositionTracker pt;
 
-	private static Dictionary<Transform, List<DamageCounter>> dict = new Dictionary<Transform,List<DamageCounter>>();
-
+	public Transform target;
 	private Vector3 offset;
 	public float speed;
 
 	private int thisValue;
 	private List<DamageCounter> values;
 
-	void Awake()
-	{
-		pt = GetComponent<PositionTracker>();
-	}
 
 	void Start()
 	{
-		transform.position = Camera.main.WorldToScreenPoint(pt.Position);
-	}
+		transform.position = Camera.main.WorldToScreenPoint(target.position);
+		
+		if (!LibraryUI.ShipDamageDict().ContainsKey(target))
+			LibraryUI.ShipDamageDict().Add(target, new List<DamageCounter>());
 
-	void OnEnable()
-	{
-		if (!dict.ContainsKey(pt.target))
-			dict.Add(pt.target, new List<DamageCounter>());
-
-		dict.TryGetValue(pt.target, out values);
+		LibraryUI.ShipDamageDict().TryGetValue(target, out values);
 		values.Add(this);
 
 		thisValue = values.Count;
@@ -46,7 +37,7 @@ public class DamageCounter : MonoBehaviour
 			offset += Vector3.up * 13 * (values.Count - thisValue);
 			thisValue = values.Count;
 		}
-		Vector3 wtsp = Camera.main.WorldToScreenPoint(pt.Position);
+		Vector3 wtsp = Camera.main.WorldToScreenPoint(target.position);
 
 		transform.position = wtsp+offset; //pin to screen position
 		offset += Vector3.left * speed * Time.deltaTime;
