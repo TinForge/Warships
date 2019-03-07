@@ -8,7 +8,6 @@ public class MainPlayer : MonoBehaviour {
 	public Texture2D cursor;
 
 	void Start () {
-		Debug.Log("REmember set cursor in MainPlayer");
 		Cursor.SetCursor(cursor,new Vector2(16,16),CursorMode.ForceSoftware);
 	}
 	

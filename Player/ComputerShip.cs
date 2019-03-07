@@ -13,7 +13,7 @@ public class ComputerShip : MonoBehaviour
 
 	//Computer state decision making
 
-	private EngineController engine;
+	private MovementController movement;
 	private WeaponsController weapons;
 
 	public bool useTargettingSystem;
@@ -29,7 +29,7 @@ public class ComputerShip : MonoBehaviour
 	void Start()
 	{
 		camera = Camera.main;
-		engine = GetComponent<EngineController>();
+		movement = GetComponent<MovementController>();
 		weapons = GetComponentInChildren<WeaponsController>();
 
 
@@ -93,14 +93,14 @@ public class ComputerShip : MonoBehaviour
 
 	private void MoveInput()
 	{
-		if (engine == null)
+		if (movement == null)
 			return;
 
 		float forwards = Input.GetAxis("Vertical");
 		float sideways = Input.GetAxis("Horizontal");
 		if (forwards < 0)
 			sideways *= -1;
-		engine.Move(forwards, sideways);
+		movement.Move(forwards, sideways);
 
 	}
 }

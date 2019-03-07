@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class UIController : MonoBehaviour, iDestroyable
+public class UIController : MonoBehaviour, iShipDisable, iHealthChange
 {
 	private ShipClass shipClass;
 
@@ -21,14 +21,10 @@ public class UIController : MonoBehaviour, iDestroyable
 		shipClass = GetComponent<ShipClass>();
 		panel = LibraryUI.CreateShipPanel(shipClass.name);
 		icon = LibraryUI.CreateIcon(panel);
-		classTag = LibraryUI.CreateShipTag(shipClass.classification, panel);
+		classTag = LibraryUI.CreateShipTag(shipClass.Classification, panel);
 		levelTag = LibraryUI.CreateLevelTag(panel);
 		distanceTag = LibraryUI.CreateDistanceTag(panel);
 		healthBar = LibraryUI.CreateHealthBar(panel);
-	}
-	void OnEnable()
-	{
-		GetComponent<HealthController>().OnHealthChange += SetHealthBar;
 	}
 
 	void LateUpdate()
@@ -52,17 +48,13 @@ public class UIController : MonoBehaviour, iDestroyable
 		}
 	}
 
-	void SetHealthBar(float ratio)
+	public void HealthChange(int amount, float ratio)
 	{
 		healthBar.GetComponent<Slider>().value = ratio;
 	}
 
-	void OnDisable()
-	{
-		GetComponent<HealthController>().OnHealthChange -= SetHealthBar;
-	}
 
-	public void Destroy()
+	public void Disable()
 	{
 		panel.GetComponent<FadeAlpha>().Activate();
 	}

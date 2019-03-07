@@ -2,18 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-///
-public class Detection : MonoBehaviour
+///can I make this a static class?
+///Similar to how enginecontroller interacts with boatprobe, but separates the core stuff?
+public class Detection:MonoBehaviour
 {
-	public List<Transform> enemyShips; //Once spotted
-	public List<Transform> friendlyShips; //Always visible
 
-	public int detectRadius;
+	public void ParseDistance()
+	{
 
-	void Start()
-    {
-        
-    }
+	}
+
 
 	void OnMouseOver()
 	{

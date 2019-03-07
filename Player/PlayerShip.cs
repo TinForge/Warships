@@ -6,7 +6,7 @@ public class PlayerShip : MonoBehaviour
 {
 	public static PlayerShip instance;
 
-	private EngineController engine;
+	private MovementController movement;
 	private WeaponsController weapons;
 
 	public bool useTargettingSystem;
@@ -26,7 +26,7 @@ public class PlayerShip : MonoBehaviour
 	void Start()
 	{
 		camera = Camera.main;
-		engine = GetComponent<EngineController>();
+		movement = GetComponent<MovementController>();
 		weapons = GetComponentInChildren<WeaponsController>();
 
 	}
@@ -101,14 +101,14 @@ public class PlayerShip : MonoBehaviour
 
 	private void MoveInput()
 	{
-		if (engine == null)
+		if (movement == null)
 			return;
 		
 		float forwards = Input.GetAxis("Vertical");
 		float sideways = Input.GetAxis("Horizontal");
 		if (forwards < 0)
 			sideways *= -1;
-		engine.Move(forwards, sideways);
+		movement.Move(forwards, sideways);
 
 	}
 

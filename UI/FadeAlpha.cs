@@ -4,7 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public class FadeAlpha : MonoBehaviour, iDestroyable
+public class FadeAlpha : MonoBehaviour, iShipDisable
 {
 
 	public bool onAwake;
@@ -38,9 +38,9 @@ public class FadeAlpha : MonoBehaviour, iDestroyable
 			}
 		}
 		else {
-			if (GetComponent<Lifetime>() != null)
-				Destroy(this);
-			else
+		//	if (GetComponent<Lifetime>() != null)
+		//		Destroy(this);
+		//	else
 				Destroy(gameObject);
 		}
     }
@@ -49,7 +49,7 @@ public class FadeAlpha : MonoBehaviour, iDestroyable
 		onAwake = true;
 	}
 
-	public void Destroy()
+	public void Disable()
 	{
 		onAwake = true;
 	}
