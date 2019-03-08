@@ -9,7 +9,7 @@ public class LibraryUI : MonoBehaviour
 {
 	private static LibraryUI instance;
 
-	public Dictionary<Transform, List<DamageCounter>> shipDamage = new Dictionary<Transform, List<DamageCounter>>();
+	public Dictionary<Transform, List<Counter>> counters = new Dictionary<Transform, List<Counter>>();
 
 	[SerializeField] public Transform overlay;
 
@@ -21,6 +21,7 @@ public class LibraryUI : MonoBehaviour
 	[SerializeField] public GameObject icon;
 	[SerializeField] public GameObject healthBar;
 	[SerializeField] public GameObject damageCounter;
+	[SerializeField] public GameObject healCounter;
 
 	void Awake()
     {
@@ -41,9 +42,9 @@ public class LibraryUI : MonoBehaviour
 
 	}
 
-	public static Dictionary<Transform,List<DamageCounter>> ShipDamageDict()
+	public static Dictionary<Transform,List<Counter>> Counters()
 	{
-		return instance.shipDamage;
+		return instance.counters;
 	}
 
 	public static void CreatePlayerUI()
@@ -92,8 +93,16 @@ public class LibraryUI : MonoBehaviour
 	public static Transform CreateDamageCounter(Transform parent, int damage)
 	{
 		GameObject t = Instantiate(instance.damageCounter, instance.overlay);
-		t.GetComponent<DamageCounter>().target =parent;
+		t.GetComponent<Counter>().target =parent;
 		t.GetComponent<TextMeshProUGUI>().text = damage +"";
+		return t.transform;
+	}
+
+	public static Transform CreateHealCounter(Transform parent, int heal)
+	{
+		GameObject t = Instantiate(instance.healCounter, instance.overlay);
+		t.GetComponent<Counter>().target = parent;
+		t.GetComponent<TextMeshProUGUI>().text = heal + "";
 		return t.transform;
 	}
 

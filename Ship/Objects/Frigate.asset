@@ -16,7 +16,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   shipTier: 2
   baseHealth: 7500
-  maxHealth: 25000
+  maxHealth: 250000
   baseMass: 3000
   maxMass: 7500
   baseMoveSpeed: 30

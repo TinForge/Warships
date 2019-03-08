@@ -2,10 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Status
+{
+Friendly,
+Neutral,
+Hostile
+}
+
 public class FleetClass
 {
-	[Range(0, 100)] public int skill;
-	public const int orderTimer = 25;
+	[SerializeField][Range(0, 1)] private float skill;
+	public float Skill { get { return skill; } }
+
+
+	[SerializeField] private const int orderTimer = 25;
+	public int OrderTimer { get { return Mathf.CeilToInt(orderTimer - (orderTimer * skill)); } }
+
+	public Status State;
+
 
 	public int fleetSize;
 
@@ -19,8 +33,6 @@ public class FleetClass
 
 	public List<Transform> ships;
 }
-
-//class for hostility/passive/friendly
 
 public class Strategy
 {

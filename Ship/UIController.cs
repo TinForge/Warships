@@ -25,6 +25,8 @@ public class UIController : MonoBehaviour, iShipDisable, iHealthChange
 		levelTag = LibraryUI.CreateLevelTag(panel);
 		distanceTag = LibraryUI.CreateDistanceTag(panel);
 		healthBar = LibraryUI.CreateHealthBar(panel);
+
+		RefreshLevel();
 	}
 
 	void LateUpdate()
@@ -48,11 +50,21 @@ public class UIController : MonoBehaviour, iShipDisable, iHealthChange
 		}
 	}
 
+	public void RefreshLevel()
+	{
+		levelTag.GetComponent<TextMeshProUGUI>().text = "Lv " + shipClass.Level;
+	}
+
 	public void HealthChange(int amount, float ratio)
 	{
 		healthBar.GetComponent<Slider>().value = ratio;
-	}
 
+		if(amount > 0)
+			LibraryUI.CreateDamageCounter(transform, amount);
+		else
+			LibraryUI.CreateHealCounter(transform, -amount);
+
+	}
 
 	public void Disable()
 	{

@@ -2,7 +2,7 @@
 using System.Collections;
 
 ///Player Input for all ship components
-public class PlayerShip : MonoBehaviour
+public class PlayerShip : MonoBehaviour, iShipDisable, iHealthChange
 {
 	public static PlayerShip instance;
 
@@ -110,6 +110,23 @@ public class PlayerShip : MonoBehaviour
 			sideways *= -1;
 		movement.Move(forwards, sideways);
 
+	}
+
+	//interfaces
+
+	public void Disable()
+	{
+		EZCameraShake.CameraShaker.Instance.ShakeOnce(3, 5, 1f, 5f);
+	}
+
+	public void HealthChange(int amount, float ratio)
+	{
+		if (amount < 1)
+			return;
+
+		float magnitude = Mathf.Lerp(100, 750, amount) / 200;   //magnitude based on damage
+		float roughness = Mathf.Lerp(1, 5, ratio);                  //roughness based on health remaining
+		EZCameraShake.CameraShaker.Instance.ShakeOnce(magnitude, roughness, 0.5f, 0.5f);
 	}
 
 }

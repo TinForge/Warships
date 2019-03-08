@@ -37,6 +37,7 @@ public class ShipClass : MonoBehaviour
 	[SerializeField] private int experience;
 	public int Experience { get { return experience; } }
 
+
 	//
 
 	public int Health { get { return Stats.BaseHealth + ((Stats.MaxHealth - Stats.BaseHealth) /100 * level); } }
@@ -53,5 +54,12 @@ public class ShipClass : MonoBehaviour
 	public float Accuracy { get { return Mathf.Clamp( Stats.BaseAccuracy + ((Stats.MaxAccuracy - Stats.BaseAccuracy) * skill), 0, 0.9f); } }
 
 	public int SpottingDist { get { return Stats.BaseSpottingDist + ((Stats.MaxSpottingDist - Stats.BaseSpottingDist) / 100 * level * skill); } }
+
+
+	private void Awake()
+	{
+		level = Random.Range(1, 10);
+		skill = Random.Range(0, 1);
+	}
 
 }

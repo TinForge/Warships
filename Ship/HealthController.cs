@@ -6,81 +6,86 @@ using UnityEngine;
 public class HealthController : MonoBehaviour, iDamageable
 {
 	private ShipClass sc;
-	private BoatProbes bp;
 
-	public ParticleSystem damagedEffect;
-	public GameObject explosionEffect;
+	[SerializeField] private ParticleSystem damagedEffect;
+	[SerializeField] private GameObject explosionEffect;
 
-	public int baseHealth;
-	int health;
+	public int MaxHealth { get { return sc.Health; } }
 
-	public float Ratio { get { return (float) health/ baseHealth; } }
+	public int Health { get; set; }
+
+	public float Ratio { get { return (float) Health / MaxHealth; } }
 
 
-    void Awake()
+    private void Awake()
 	{
-		health = baseHealth;
-
 		sc = GetComponent<ShipClass>();
-		bp = GetComponent<BoatProbes>();
-    }
-
-	void Update()
-	{
-		if (health == 0)
-			return;
-
-		CheckSink();
 	}
 
-	public void CheckSink()
+	private void Start()
+	{
+		InvokeRepeating("Regenerate", 0, 5);
+		Health = MaxHealth;
+	}
+
+	private void Update()
+	{
+		if (Health == 0)
+			return;
+		TippedOver();
+	}
+
+	public void TippedOver()
 	{
 		float z = transform.eulerAngles.z;
 		if (z > 180)
 			z -= 360;
-		if (Mathf.Abs(z) > 40) {
+		if (Mathf.Abs(z) > 40)
 			Damage(Mathf.RoundToInt(Mathf.Pow(z, 2) * Time.deltaTime));
-		}
-	}
-
-	public void Damage(int damage)
-	{
-		health = Mathf.Clamp(health - damage, 0, baseHealth);
-
-		foreach (iHealthChange i in GetComponentsInChildren<iHealthChange>())
-			i.HealthChange(damage, Ratio);
-
-		if (health == 0) 
-			DisableShipControllers();
-
-		LibraryUI.CreateDamageCounter(transform, damage);
-
-		float magnitude = Mathf.Lerp(100, 750, damage) / 200;	//magnitude based on damage
-		float roughness = Mathf.Lerp(1,5, Ratio);					//roughness based on health remaining
-
-		if(GetComponent<PlayerShip>() !=null)
-			EZCameraShake.CameraShaker.Instance.ShakeOnce(magnitude, roughness, 0.5f, 0.5f);
 	}
 
 	private void OnCollisionEnter(Collision collision)
 	{
-		if(collision.transform.tag == "Ship") {
+		if (collision.transform.tag == "Ship")
 			if (collision.relativeVelocity.magnitude > 5)
-				Damage((int)(collision.relativeVelocity.magnitude * (collision.rigidbody.mass /1000)));
-		}
+				Damage((int) (collision.relativeVelocity.magnitude * (collision.rigidbody.mass / 1000)));
+	}
+
+	private void Regenerate()
+	{
+		int regen = Mathf.RoundToInt(MaxHealth * 0.01f);
+
+		int delta = Health;
+		Health = Mathf.Clamp(Health + regen, 0, MaxHealth);
+		delta -= Health;
+
+		if (delta < 0)
+		foreach (iHealthChange i in GetComponentsInChildren<iHealthChange>())
+			i.HealthChange(delta, Ratio);
+	}
+
+	public void Damage(int damage)
+	{
+		Health = Mathf.Clamp(Health - damage, 0, MaxHealth);
+
+		foreach (iHealthChange i in GetComponentsInChildren<iHealthChange>())
+			i.HealthChange(damage, Ratio);
+
+		if (Health == 0) 
+			DisableShipControllers();
+
 	}
 
 	private void DisableShipControllers()
 	{
+
 		foreach (iShipDisable i in GetComponentsInChildren<iShipDisable>())
 			i.Disable();
 
-		Destroy(this);
-
 		ObjectPooler.instance.Instantiate(explosionEffect, transform.position, Quaternion.identity);
 
-		if (GetComponent<PlayerShip>() != null)
-			EZCameraShake.CameraShaker.Instance.ShakeOnce(3, 5, 1f, 5f);
+		CancelInvoke();
+		Destroy(this);
 	}
 
 
