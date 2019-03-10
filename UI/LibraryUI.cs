@@ -9,6 +9,10 @@ public class LibraryUI : MonoBehaviour
 {
 	private static LibraryUI instance;
 
+	public const float ClippingDist = 1000;
+	public const float MaxUIDist = 10000;
+	public const float ZScaler = ClippingDist / MaxUIDist;
+
 	public Dictionary<Transform, List<Counter>> counters = new Dictionary<Transform, List<Counter>>();
 
 	[SerializeField] public Transform overlay;

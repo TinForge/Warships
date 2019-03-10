@@ -35,12 +35,12 @@ public class Projectile : MonoBehaviour
 	private const float BaseSpread = 25F;
 	private bool Grounded { get { return transform.position.y < 0; } }
 
-	public void Activate(ProjectileData projectileData, Vector3 velocity)
+	public void Activate(ProjectileData projectileData, Vector3 velocity, float accuracy)
 	{
 		gameObject.SetActive(true);
 		this.projectileData = projectileData;
 
-		Vector3 rng = Random.insideUnitSphere * (BaseSpread * (1 - projectileData.accuracy));
+		Vector3 rng = Random.insideUnitSphere * (BaseSpread * (1 - (projectileData.accuracy * accuracy)));
 		rb.velocity = Vector3.zero;
 		rb.AddForce(velocity + rng, ForceMode.VelocityChange);
 
@@ -67,8 +67,11 @@ public class Projectile : MonoBehaviour
 	{
 		if (other.transform == projectileData.owner)
 			return;
+
+		int finalDamage = RNG.Damage(projectileData.damage, 0.1f);
+
 		if (other.transform.GetComponent<iDamageable>() !=null)
-			other.transform.GetComponent<iDamageable>().Damage(projectileData.damage);
+			other.transform.GetComponent<iDamageable>().Damage(finalDamage);
 
 		ObjectPooler.instance.Instantiate(hitEffect, transform.position, Quaternion.Euler(-mesh.forward));
 		Recycle();

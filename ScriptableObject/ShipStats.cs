@@ -56,5 +56,9 @@ public class ShipStats : ScriptableObject
 	[SerializeField] private int maxSpottingDist;
 	public int MaxSpottingDist { get { return maxSpottingDist; } }
 
+	[SerializeField] private int baseHidingDist;
+	public int BaseHidingDist { get { return baseHidingDist; } }
+	[SerializeField] private int maxHidingDist;
+	public int MaxHidingDist { get { return maxHidingDist; } }
 
 }

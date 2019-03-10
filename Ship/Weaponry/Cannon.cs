@@ -56,7 +56,7 @@ public class Cannon : MonoBehaviour, iWeapon
 		TraverseCannon(point,origin);
 	}
 
-	public void Fire(Vector3 point, Transform owner)
+	public void Fire(Vector3 point, Transform owner, float accuracy)
 	{
 		if (reloading || !tracking || !lockedX ||!lockedY)
 			return;
@@ -70,12 +70,28 @@ public class Cannon : MonoBehaviour, iWeapon
 		float magnitude = Mathf.Lerp(0, 2, 500/range);
 		EZCameraShake.CameraShaker.Instance.ShakeOnce(2, 2.5f, 0.25f, 0.6f);
 
+
+		StopCoroutine(Salvo(point, velocity, accuracy));
+		StartCoroutine(Salvo(point, velocity, accuracy));
+
+		/*
 		for (int i= -1; i < 2; i++) {
 			GameObject projectile = ObjectPooler.instance.Instantiate(shell, exit.position+(Vector3.right*(i*2)), cannons.rotation);
-			projectile.GetComponent<Projectile>().Activate(projectileData, velocity);
+			projectile.GetComponent<Projectile>().Activate(projectileData, velocity, accuracy);
 		}
+		*/
 		StartCoroutine(GunRecoil());
 	}
+
+	public IEnumerator Salvo(Vector3 point, Vector3 velocity, float accuracy)
+	{
+		for (int i = -1; i < 2; i++) {
+			GameObject projectile = ObjectPooler.instance.Instantiate(shell, exit.position + (Vector3.right * (i * 2)), cannons.rotation);
+			projectile.GetComponent<Projectile>().Activate(projectileData, velocity, accuracy);
+			yield return new WaitForSeconds(0.2f);
+		}
+	}
+
 
 	private void Reload()
 	{

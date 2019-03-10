@@ -82,7 +82,7 @@ public class PlayerShip : MonoBehaviour, iShipDisable, iHealthChange
 		Ray ray = camera.ScreenPointToRay(Input.mousePosition);
 		RaycastHit hit;
 		Vector3 point;
-		if (Physics.Raycast(ray, out hit, 5000F)) {
+		if (Physics.Raycast(ray, out hit, 20000F)) {
 			point = hit.point;
 			lastKnownZ = hit.point.z;
 		}

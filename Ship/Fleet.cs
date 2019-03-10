@@ -46,10 +46,13 @@ public class Formation
 
 public abstract class Fleet : MonoBehaviour
 {
+	public string name;
 	public FleetClass myFleet;
 	public List<FleetClass> oppositionFleets = new List<FleetClass>();
 	public Strategy strategy;
 	public Formation formation;
+
+	public List<ShipClass> detectedShips = new List<ShipClass>();
 
 	//Integrates on top of the ship system.
 
@@ -68,12 +71,12 @@ public abstract class Fleet : MonoBehaviour
 	//Strategies will be selected based on odds and skill
 
 	//Fleet will need to receive lots of information
-		//Difficulty modifier
-		//Stats of own fleet
-		//Stats of other fleet
-		//Outcome prediction : Machine Learning!?
-		//Strategies
-		//Formation positions
+	//Difficulty modifier
+	//Stats of own fleet
+	//Stats of other fleet
+	//Outcome prediction : Machine Learning!?
+	//Strategies
+	//Formation positions
 
 	public abstract void AssignFormation();
 

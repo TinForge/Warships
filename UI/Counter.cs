@@ -38,6 +38,7 @@ public class Counter : MonoBehaviour
 			thisValue = values.Count;
 		}
 		Vector3 wtsp = Camera.main.WorldToScreenPoint(target.position);
+		wtsp.z *= LibraryUI.ZScaler;
 
 		transform.position = wtsp+offset; //pin to screen position
 		offset += Vector3.left * speed * Time.deltaTime;

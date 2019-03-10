@@ -19,14 +19,30 @@ public class UIController : MonoBehaviour, iShipDisable, iHealthChange
 	void Start()
 	{
 		shipClass = GetComponent<ShipClass>();
+
+		SpawnUI();
+		ToggleUI(false);
+	}
+
+	public void SpawnUI()
+	{
 		panel = LibraryUI.CreateShipPanel(shipClass.name);
 		icon = LibraryUI.CreateIcon(panel);
 		classTag = LibraryUI.CreateShipTag(shipClass.Classification, panel);
 		levelTag = LibraryUI.CreateLevelTag(panel);
+		levelTag.GetComponent<TextMeshProUGUI>().text = "Lv " + shipClass.Level;
 		distanceTag = LibraryUI.CreateDistanceTag(panel);
 		healthBar = LibraryUI.CreateHealthBar(panel);
+	}
 
-		RefreshLevel();
+	public void ToggleUI(bool state)
+	{
+		panel.gameObject.SetActive(state);
+	}
+
+	public void DestroyUI()
+	{
+		Destroy(panel);
 	}
 
 	void LateUpdate()
@@ -37,23 +53,34 @@ public class UIController : MonoBehaviour, iShipDisable, iHealthChange
 	private void UpdateUI()
 	{
 		if (panel != null) {
-			Vector3 origin = transform.position + Vector3.up * 50;
+			if (!panel.gameObject.activeSelf)
+				return;
+
+				float distance = Vector3.Distance(transform.position, PlayerShip.instance.transform.position);
+
+			Vector3 origin = transform.position + Vector3.up * (50); // + distance/1000) ;
 			Vector3 rectPos = Camera.main.WorldToScreenPoint(origin);
 			if (rectPos.z > 0)
-				rectPos.z = Vector3.Distance(origin, Camera.main.transform.position);
+				rectPos.z = distance * LibraryUI.ZScaler;
 			else
 				rectPos = new Vector3(-100, -100, 0);
 			panel.position = rectPos;
 
-			float dist = Vector3.Distance(transform.position, PlayerShip.instance.transform.position);
-			distanceTag.GetComponent<TextMeshProUGUI>().text = dist.ToString("N0") + "m";
+			distanceTag.GetComponent<TextMeshProUGUI>().text = distance.ToString("N0") + "m";
 		}
 	}
 
-	public void RefreshLevel()
+	/* Clashes with detection system
+	private void OnMouseOver()
 	{
-		levelTag.GetComponent<TextMeshProUGUI>().text = "Lv " + shipClass.Level;
+		ToggleUI(true);
 	}
+
+	private void OnMouseExit()
+	{
+		ToggleUI(false);
+	}
+	*/
 
 	public void HealthChange(int amount, float ratio)
 	{

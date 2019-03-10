@@ -12,8 +12,8 @@ public class ShipClass : MonoBehaviour
 
 	//
 
-	[SerializeField] private string fleet;
-	public string Fleet { get { return fleet; } }
+	[SerializeField] private Fleet fleet;
+	public Fleet Fleet { get { return fleet; } }
 
 	[SerializeField] private Image fleetIcon;
 	public Image FleetIcon { get { return fleetIcon; } }
@@ -32,7 +32,7 @@ public class ShipClass : MonoBehaviour
 	public int Level { get { return level; } }
 
 	[SerializeField] private int skill; //relates to ship handling: movement, spotting, targetting, accuracy, responsitivity
-	public int Skill { get { return skill; } }
+	public float Skill { get { return skill; } }
 
 	[SerializeField] private int experience;
 	public int Experience { get { return experience; } }
@@ -55,11 +55,17 @@ public class ShipClass : MonoBehaviour
 
 	public int SpottingDist { get { return Stats.BaseSpottingDist + ((Stats.MaxSpottingDist - Stats.BaseSpottingDist) / 100 * level * skill); } }
 
+	public int HidingDist { get { return Stats.BaseHidingDist + ((Stats.MaxHidingDist - Stats.BaseHidingDist) / 100 * level * skill); } }
 
 	private void Awake()
 	{
 		level = Random.Range(1, 10);
 		skill = Random.Range(0, 1);
+
+		if (GetComponent<PlayerShip>())
+			skill = 1;
+
+		ShipManager.RegisterShip(this);
 	}
 
 }

@@ -23,7 +23,9 @@ MonoBehaviour:
   maxMoveSpeed: 55
   baseTurnSpeed: 0.3
   maxTurnSpeed: 0.6
-  baseAccuracy: 0
+  baseAccuracy: 0.5
   maxAccuracy: 0.9
-  baseSpottingDist: 500
-  maxSpottingDist: 1500
+  baseSpottingDist: 1000
+  maxSpottingDist: 7500
+  baseHidingDist: 150
+  maxHidingDist: 2000
