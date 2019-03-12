@@ -20,28 +20,19 @@ public class HealthController : MonoBehaviour, iDamageable
     private void Awake()
 	{
 		sc = GetComponent<ShipClass>();
-	}
-
-	private void Start()
-	{
-		InvokeRepeating("Regenerate", 0, 5);
 		Health = MaxHealth;
+
+		InvokeRepeating("Regenerate", 0, 5);
+		InvokeRepeating("CapsizeCheck", 0, 1);
 	}
 
-	private void Update()
-	{
-		if (Health == 0)
-			return;
-		TippedOver();
-	}
-
-	public void TippedOver()
+	public void CapsizeCheck()
 	{
 		float z = transform.eulerAngles.z;
 		if (z > 180)
 			z -= 360;
 		if (Mathf.Abs(z) > 40)
-			Damage(Mathf.RoundToInt(Mathf.Pow(z, 2) * Time.deltaTime));
+			Damage(Mathf.RoundToInt(Mathf.Pow(z, 3) * Time.deltaTime));
 	}
 
 	private void OnCollisionEnter(Collision collision)
@@ -78,7 +69,6 @@ public class HealthController : MonoBehaviour, iDamageable
 
 	private void DisableShipControllers()
 	{
-
 		foreach (iShipDisable i in GetComponentsInChildren<iShipDisable>())
 			i.Disable();
 

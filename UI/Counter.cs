@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Counter : MonoBehaviour
 {
-
 	public Transform target;
 	private Vector3 offset;
 	public float speed;
@@ -17,10 +16,10 @@ public class Counter : MonoBehaviour
 	{
 		transform.position = Camera.main.WorldToScreenPoint(target.position);
 		
-		if (!LibraryUI.Counters().ContainsKey(target))
-			LibraryUI.Counters().Add(target, new List<Counter>());
+		if (!LibraryUI.Counters.ContainsKey(target))
+			LibraryUI.Counters.Add(target, new List<Counter>());
 
-		LibraryUI.Counters().TryGetValue(target, out values);
+		LibraryUI.Counters.TryGetValue(target, out values);
 		values.Add(this);
 
 		thisValue = values.Count;

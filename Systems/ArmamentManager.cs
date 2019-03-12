@@ -16,7 +16,6 @@ public class ArmamentManager : MonoBehaviour
 			instance = this;
 	}
 
-
 	public void LoadWeapons(List<WeaponPlatform> platforms)
 	{
 		foreach(WeaponPlatform wp in platforms) {
@@ -32,7 +31,7 @@ public class ArmamentManager : MonoBehaviour
 				obj = small;
 				break;
 			}
-			wp.weapon = Instantiate(obj, wp.origin).GetComponent<IArmament>();
+			wp.weapon = Instantiate(obj, wp.origin).GetComponent<iWeapon>();
 		}
 	}
 

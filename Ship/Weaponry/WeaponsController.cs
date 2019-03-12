@@ -39,29 +39,23 @@ public class WeaponPlatform
 ///Send instructions to weapon classes on ship
 public class WeaponsController : MonoBehaviour, iShipDisable
 {
-	private ShipClass sc;
+	private ShipClass shipClass;
 	[HideInInspector] public List<WeaponPlatform> platforms;
 	[SerializeField] private Transform platformParent;
 
-	public int minEngagingDistance;
-
-
-
 	void Awake()
 	{
-		sc = GetComponent<ShipClass>();
+		shipClass = GetComponent<ShipClass>();
 		foreach (Transform platform in platformParent)
 				platforms.Add(new WeaponPlatform(platform));
-	}
 
-	void Start()
-	{
+
 		ArmamentManager.instance.LoadWeapons(platforms);
 	}
 
 	public void Target(Vector3 point)
 	{
-		if (Vector3.Distance(transform.position, point) < minEngagingDistance)
+		if (Vector3.Distance(transform.position, point) < shipClass.MinEngageDist)
 			point = transform.position;
 
 		foreach (WeaponPlatform wp in platforms)
@@ -79,7 +73,7 @@ public class WeaponsController : MonoBehaviour, iShipDisable
 	public IEnumerator FireCycle(Vector3 point)
 	{
 		foreach (WeaponPlatform wp in platforms) {
-			wp.weapon.Fire(point, transform, sc.Accuracy);
+			wp.weapon.Fire(point, transform, shipClass.Accuracy);
 			yield return new WaitForSeconds(0.05f);
 		}
 	}
@@ -91,9 +85,9 @@ public class WeaponsController : MonoBehaviour, iShipDisable
 
 	void OnDrawGizmos()
 	{
-		if (true) {
+		if (shipClass!=null) {
 			Gizmos.color = Color.gray;
-			Gizmos.DrawWireSphere(transform.position, minEngagingDistance);
+			Gizmos.DrawWireSphere(transform.position, shipClass.MinEngageDist);
 		}
 	}
 

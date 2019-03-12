@@ -51,6 +51,10 @@ public class ShipStats : ScriptableObject
 	public float MaxAccuracy { get { return maxAccuracy; } }
 
 	[Space]
+	[SerializeField] private int minEngageDist;
+	public int MinEngageDist { get { return minEngageDist; } }
+
+	[Space]
 	[SerializeField] private int baseSpottingDist;
 	public int BaseSpottingDist { get { return baseSpottingDist; } }
 	[SerializeField] private int maxSpottingDist;

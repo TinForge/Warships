@@ -6,7 +6,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Fleet data, ship level/skill/experience, and base+stat properties
 /// </summary>
-public class ShipClass : MonoBehaviour
+public class ShipClass : MonoBehaviour, iShipDisable
 {
 	[SerializeField] private ShipStats Stats;
 
@@ -14,9 +14,6 @@ public class ShipClass : MonoBehaviour
 
 	[SerializeField] private Fleet fleet;
 	public Fleet Fleet { get { return fleet; } }
-
-	[SerializeField] private Image fleetIcon;
-	public Image FleetIcon { get { return fleetIcon; } }
 
 	//
 
@@ -44,28 +41,49 @@ public class ShipClass : MonoBehaviour
 
 	public int Mass { get { return Stats.BaseMass + ((Stats.MaxMass - Stats.BaseMass) / 100 * level); } }
 
+	//
 
 	public float MovementSpeed { get { return Stats.BaseMoveSpeed + ((Stats.MaxMoveSpeed - Stats.BaseMoveSpeed) /100* level * skill); } }
 
 	public float TurnSpeed { get { return Stats.BaseTurnSpeed + ((Stats.MaxTurnSpeed - Stats.BaseTurnSpeed) /100* level * skill); } }
 
-
+	//
 
 	public float Accuracy { get { return Mathf.Clamp( Stats.BaseAccuracy + ((Stats.MaxAccuracy - Stats.BaseAccuracy) * skill), 0, 0.9f); } }
+
+	public int MinEngageDist { get { return Stats.MinEngageDist; } }
+
+	//
+
+	public float ScanTimer { get { return (1.1f - Skill) * 10; } }
 
 	public int SpottingDist { get { return Stats.BaseSpottingDist + ((Stats.MaxSpottingDist - Stats.BaseSpottingDist) / 100 * level * skill); } }
 
 	public int HidingDist { get { return Stats.BaseHidingDist + ((Stats.MaxHidingDist - Stats.BaseHidingDist) / 100 * level * skill); } }
 
-	private void Awake()
+	void Awake()
 	{
 		level = Random.Range(1, 10);
-		skill = Random.Range(0, 1);
-
+		//skill = Random.Range(0, 1);
+		skill = 1;
 		if (GetComponent<PlayerShip>())
 			skill = 1;
 
-		ShipManager.RegisterShip(this);
+		if (GetComponentInParent<Fleet>() != null)
+			fleet = GetComponentInParent<Fleet>();
+
+		Debug.Log("ShipClass Awake call");
+	}
+
+	public void Disable()
+	{
+		Destroy(gameObject, 5);
+	}
+
+	void OnDestroy()
+	{
+		ShipManager.RemoveShip(this);
+		fleet.UnregisterShip(gameObject);
 	}
 
 }

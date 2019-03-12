@@ -13,7 +13,7 @@ public class LibraryUI : MonoBehaviour
 	public const float MaxUIDist = 10000;
 	public const float ZScaler = ClippingDist / MaxUIDist;
 
-	public Dictionary<Transform, List<Counter>> counters = new Dictionary<Transform, List<Counter>>();
+	public static Dictionary<Transform, List<Counter>> Counters;
 
 	[SerializeField] public Transform overlay;
 
@@ -21,6 +21,8 @@ public class LibraryUI : MonoBehaviour
 	[SerializeField] public GameObject shipPanel;
 	[SerializeField] public GameObject classTag;
 	[SerializeField] public GameObject levelTag;
+	[SerializeField] public GameObject healthTag;
+	[SerializeField] public GameObject fleetTag;
 	[SerializeField] public GameObject distanceTag;
 	[SerializeField] public GameObject icon;
 	[SerializeField] public GameObject healthBar;
@@ -29,31 +31,23 @@ public class LibraryUI : MonoBehaviour
 
 	void Awake()
     {
-		if (instance != this && instance == null)
-			instance = this;
-		else
-			Debug.LogWarning("Multiple Instances");
-    }
+		if (instance != null)
+			Destroy(instance);
+		instance = this;
+
+		Counters = new Dictionary<Transform, List<Counter>>();
+	}
+
+	void Start()
+	{
+		Debug.Log("LibraryUI Start");
+	}
 
 	void LateUpdate()
 	{
 		for (int i = 0; i < overlay.transform.childCount-1; i++)
 			if (overlay.GetChild(i).position.z < overlay.GetChild(i+1).position.z)
 				overlay.GetChild(i).SetSiblingIndex(i+1);
-
-		//for (int i = 0; i < overlay.transform.childCount - 1; i++)
-		//	if ( overlay.GetChild(i).position.z < overlay.GetChild(i + 1).position.z)
-
-	}
-
-	public static Dictionary<Transform,List<Counter>> Counters()
-	{
-		return instance.counters;
-	}
-
-	public static void CreatePlayerUI()
-	{
-
 	}
 
 	public static Transform CreateShipPanel(string name)
@@ -70,9 +64,23 @@ public class LibraryUI : MonoBehaviour
 		return t.transform;
 	}
 
-	public static Transform CreateLevelTag(Transform parent)
+	public static Transform CreateLevelTag(Transform parent, string text)
 	{
 		GameObject t = Instantiate(instance.levelTag, parent);
+		t.GetComponent<TextMeshProUGUI>().text = text;
+		return t.transform;
+	}
+
+	public static Transform CreateHealthTag(Transform parent)
+	{
+		GameObject t = Instantiate(instance.healthTag, parent);
+		return t.transform;
+	}
+
+	public static Transform CreateFleetTag(Transform parent, string name)
+	{
+		GameObject t = Instantiate(instance.fleetTag, parent);
+		t.GetComponent<TextMeshProUGUI>().text = name;
 		return t.transform;
 	}
 

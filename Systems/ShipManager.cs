@@ -4,38 +4,37 @@ using UnityEngine;
 
 public class ShipManager : MonoBehaviour
 {
-	public static ShipManager instance;
+	private static ShipManager instance;
 
-	public static List<ShipClass> Ships = new List<ShipClass>();
+	public static List<ShipClass> List;
 
-	private void Awake()
+	void Awake()
 	{
-		if (instance != this && instance == null)
-			instance = this;
-		else
-			Debug.LogError("Duplicate singletons: ShipManager");
-		Ships = new List<ShipClass>();
+		if (instance != null)
+			Destroy(instance);
+		instance = this;
+
+		List = new List<ShipClass>();
+
+		foreach (ShipClass s in FindObjectsOfType<ShipClass>())
+			List.Add(s);
 	}
 
-	private void Start()
+	void Start()
 	{
-		foreach (ShipClass s in GameObject.FindObjectsOfType<ShipClass>())
-			RegisterShip(s);
+		Debug.Log("ShipManager Start");
 	}
 
-	public List<ShipClass> List()
+	public static GameObject AddShip(GameObject ship,Vector3 position, Quaternion rotation, Transform parent)
 	{
-		return Ships;
+		ship = Instantiate(ship, position, rotation, parent);
+		List.Add(ship.GetComponent<ShipClass>());
+		return ship;
 	}
 
-	public static void RegisterShip(ShipClass ship)
+	public static void RemoveShip(ShipClass ship)
 	{
-		Ships.Add(ship);
-	}
-
-	public static void UnregisterShip(ShipClass ship)
-	{
-		Ships.Remove(ship);
+		List.Remove(ship);
 	}
 
 }

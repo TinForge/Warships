@@ -8,32 +8,25 @@ public class DetectionController : MonoBehaviour
 
 	//include its own UI module I guess, managed using UIController
 
-	public List<ShipClass> detectedShips = new List<ShipClass>();
-	public List<ShipClass> friendlyShips = new List<ShipClass>();
-	public List<ShipClass> enemyShips = new List<ShipClass>();
-
-	private float scanTimer;
+	private List<ShipClass> detectedShips;
 
 	void Awake()
     {
 		shipClass = GetComponent<ShipClass>();
-    }
-
-	void Start()
-	{
-		scanTimer = (1.1f - shipClass.Skill) * 10;
-
+		detectedShips = new List<ShipClass>();
+		
 		if (shipClass.Fleet != null)
 			detectedShips = shipClass.Fleet.detectedShips;
 
 		StartCoroutine(Scan());
 	}
 
+
 	public IEnumerator Scan()
 	{
-		yield return new WaitForSeconds(scanTimer);
-		while (true) {
-			foreach (ShipClass s in ShipManager.Ships) {
+		yield return new WaitForSeconds(shipClass.ScanTimer);
+		while (shipClass!=null) {
+			foreach (ShipClass s in ShipManager.List) {
 				if (detectedShips.Contains(s))
 					continue;
 				if (s == shipClass)
@@ -43,7 +36,7 @@ public class DetectionController : MonoBehaviour
 					break;
 				}
 			}
-			yield return new WaitForSeconds(scanTimer);
+			yield return new WaitForSeconds(shipClass.ScanTimer);
 		}
 	}
 
@@ -51,7 +44,7 @@ public class DetectionController : MonoBehaviour
 	{
 		ships.Add(ship);
 
-		if (GetComponent<PlayerShip>() != null)
+		//if (GetComponent<PlayerShip>() != null)
 			ship.GetComponent<UIController>().ToggleUI(true);
 	}
 
@@ -59,24 +52,36 @@ public class DetectionController : MonoBehaviour
 	{
 		ships.Remove(ship);
 
-		if (GetComponent<PlayerShip>() != null)
+		//if (GetComponent<PlayerShip>() != null)
 			ship.GetComponent<UIController>().ToggleUI(false);
 	}
 
 	void OnDrawGizmos()
 	{
-		if (Application.isPlaying) {
-			if (true) {
+		if (!Application.isPlaying)
+			return;
+
+			if (false) {
 				Gizmos.color = Color.white;
 				Gizmos.DrawWireSphere(transform.position, shipClass.SpottingDist);
 				Gizmos.color = Color.black;
 				Gizmos.DrawWireSphere(transform.position, shipClass.HidingDist);
 			}
 
-			if (true) {
-				Gizmos.color = Color.green;
-				foreach (ShipClass s in detectedShips)
-					Gizmos.DrawLine(transform.position, s.transform.position);
+		if (true) {
+			foreach (ShipClass s in detectedShips) {
+				if (s == null)
+					continue;
+				if (shipClass.Fleet != null) { //if OUR ship has a fleet
+					if (shipClass.Fleet == s.Fleet) //if OUR fleet contains THEIR ship
+						Gizmos.color = Color.green;
+					else
+						Gizmos.color = Color.red;
+				}
+				if (s.Fleet == null) //if THEIR ship does not have a fleet.
+					Gizmos.color = Color.gray;
+
+				Gizmos.DrawLine(transform.position, s.transform.position);
 			}
 		}
 	}

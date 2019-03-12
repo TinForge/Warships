@@ -11,15 +11,20 @@ public class UIController : MonoBehaviour, iShipDisable, iHealthChange
 	private Transform panel;
 	private Transform classTag;
 	private Transform levelTag;
+	private Transform healthTag;
+	private Transform fleetTag;
 	private Transform distanceTag;
 	private Transform icon;
 	private Transform healthBar;
 
 
-	void Start()
+	void Awake()
 	{
 		shipClass = GetComponent<ShipClass>();
+	}
 
+	void Start()
+	{
 		SpawnUI();
 		ToggleUI(false);
 	}
@@ -29,8 +34,11 @@ public class UIController : MonoBehaviour, iShipDisable, iHealthChange
 		panel = LibraryUI.CreateShipPanel(shipClass.name);
 		icon = LibraryUI.CreateIcon(panel);
 		classTag = LibraryUI.CreateShipTag(shipClass.Classification, panel);
-		levelTag = LibraryUI.CreateLevelTag(panel);
-		levelTag.GetComponent<TextMeshProUGUI>().text = "Lv " + shipClass.Level;
+		levelTag = LibraryUI.CreateLevelTag(panel, "Lv " + shipClass.Level);
+		healthTag = LibraryUI.CreateHealthTag(panel);
+		healthTag.GetComponent<TextMeshProUGUI>().text = GetComponent<HealthController>().Health + "";
+		if(shipClass.Fleet!=null)
+		fleetTag = LibraryUI.CreateFleetTag(panel, shipClass.Fleet.name);
 		distanceTag = LibraryUI.CreateDistanceTag(panel);
 		healthBar = LibraryUI.CreateHealthBar(panel);
 	}
@@ -40,23 +48,14 @@ public class UIController : MonoBehaviour, iShipDisable, iHealthChange
 		panel.gameObject.SetActive(state);
 	}
 
-	public void DestroyUI()
-	{
-		Destroy(panel);
-	}
 
 	void LateUpdate()
-	{
-		UpdateUI();
-	}
-
-	private void UpdateUI()
 	{
 		if (panel != null) {
 			if (!panel.gameObject.activeSelf)
 				return;
 
-				float distance = Vector3.Distance(transform.position, PlayerShip.instance.transform.position);
+			float distance = Vector3.Distance(transform.position, Camera.main.transform.position); //PlayerShip.instance.transform.position);
 
 			Vector3 origin = transform.position + Vector3.up * (50); // + distance/1000) ;
 			Vector3 rectPos = Camera.main.WorldToScreenPoint(origin);
@@ -84,6 +83,7 @@ public class UIController : MonoBehaviour, iShipDisable, iHealthChange
 
 	public void HealthChange(int amount, float ratio)
 	{
+		healthTag.GetComponent<TextMeshProUGUI>().text = GetComponent<HealthController>().Health + "";
 		healthBar.GetComponent<Slider>().value = ratio;
 
 		if(amount > 0)

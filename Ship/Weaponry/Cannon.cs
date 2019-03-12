@@ -20,8 +20,8 @@ public class Cannon : MonoBehaviour, iWeapon
 	[SerializeField] private float reloadTime = 1F;
 
 	//Internal
-	const float MaxElevation = 45F;
-	const float MinElevation = -15F;
+	const float MaxElevation = 35F;
+	const float MinElevation = -5F;
 	private float traverseSpeed = 25.0f;
 	private float bufferAngle = 5.0f;
 	private float acceleration_Time = 0.2f;
