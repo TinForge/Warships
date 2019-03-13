@@ -81,7 +81,7 @@ public class Fleet : MonoBehaviour
 	void Start()
 	{
 		for(int i = 0; i < ships.Count; i++){
-			ships[i] = ShipManager.AddShip(ships[i], transform.position + Vector3.right * (i*100) , Quaternion.identity, transform);
+			ships[i] = ShipManager.AddShip(ships[i], transform.position + Vector3.right * (i*100) , transform.rotation, transform);
 		}
 
 		if (playerFleet) {
@@ -92,6 +92,7 @@ public class Fleet : MonoBehaviour
 	}
 
 	GameObject camPivot;
+	bool scoped;
 
 	void LateUpdate()
 	{
@@ -101,7 +102,15 @@ public class Fleet : MonoBehaviour
 				ave += ship.transform.position;
 			}
 			ave /= ships.Count;
-			camPivot.transform.position = Vector3.Lerp(camPivot.transform.position, ave + Vector3.up*30, 0.1f);
+			camPivot.transform.position = Vector3.MoveTowards(camPivot.transform.position, ave + Vector3.up*30, 0.5f);
+
+
+			if (Input.GetKeyDown(KeyCode.F)) {
+				scoped = !scoped;
+				Camera.main.transform.parent.GetComponent<Orbital>().enabled = !scoped;
+				Camera.main.transform.parent.GetComponent<ScopedCamera>().enabled = scoped;
+			}
+
 		}
 		
 	}

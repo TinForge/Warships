@@ -18,9 +18,7 @@ public class ShipClass : MonoBehaviour, iShipDisable
 	//
 
 	public string Classification { get { return Stats.Classification; } }
-
 	public Image Icon { get { return Stats.Icon; } }
-
 	public int ShipTier { get { return Stats.ShipTier; } }
 
 	//

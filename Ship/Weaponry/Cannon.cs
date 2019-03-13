@@ -7,10 +7,10 @@ public class Cannon : MonoBehaviour, iWeapon
 	public ProjectileData projectileData;
 
 	[Header("Components")]
-	public Transform turret;
-	public Transform cannons;
-	public Transform exit;
-	public GameObject shell;
+	[SerializeField] private Transform turret;
+	[SerializeField] private Transform cannons;
+	[SerializeField] private Transform exit;
+	[SerializeField] private GameObject shell;
 
 	[Space]
 
@@ -22,9 +22,9 @@ public class Cannon : MonoBehaviour, iWeapon
 	//Internal
 	const float MaxElevation = 35F;
 	const float MinElevation = -5F;
-	private float traverseSpeed = 25.0f;
-	private float bufferAngle = 5.0f;
-	private float acceleration_Time = 0.2f;
+	const float traverseSpeed = 25.0f;
+	const float bufferAngle = 5.0f;
+	const float acceleration_Time = 0.2f;
 	const float RecoilRateIn = 15;
 	const float RecoilRateOut = 1;
 
@@ -50,8 +50,6 @@ public class Cannon : MonoBehaviour, iWeapon
 
 	public void Track(Vector3 point, Transform origin)
 	{
-		//can track?
-
 		TraverseTurret(point);
 		TraverseCannon(point,origin);
 	}
@@ -64,22 +62,15 @@ public class Cannon : MonoBehaviour, iWeapon
 		reloading = true;
 		Invoke("Reload", reloadTime);
 		Vector3 velocity = HitTargetBySpeed(exit.position, point, Physics.gravity * projectileData.gravity, projectileData.speed);
-		//owner.GetComponent<Rigidbody>().AddForceAtPosition(-velocity, exit.position,ForceMode.Impulse); //recoil
 
 		float range = Vector3.Distance(Camera.main.transform.position, exit.position);
 		float magnitude = Mathf.Lerp(0, 2, 500/range);
 		EZCameraShake.CameraShaker.Instance.ShakeOnce(2, 2.5f, 0.25f, 0.6f);
 
-
 		StopCoroutine(Salvo(point, velocity, accuracy));
 		StartCoroutine(Salvo(point, velocity, accuracy));
 
-		/*
-		for (int i= -1; i < 2; i++) {
-			GameObject projectile = ObjectPooler.instance.Instantiate(shell, exit.position+(Vector3.right*(i*2)), cannons.rotation);
-			projectile.GetComponent<Projectile>().Activate(projectileData, velocity, accuracy);
-		}
-		*/
+		StopCoroutine(GunRecoil());
 		StartCoroutine(GunRecoil());
 	}
 
@@ -91,7 +82,6 @@ public class Cannon : MonoBehaviour, iWeapon
 			yield return new WaitForSeconds(0.2f);
 		}
 	}
-
 
 	private void Reload()
 	{

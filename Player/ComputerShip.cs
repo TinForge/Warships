@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ComputerShip : MonoBehaviour
+public class ComputerShip : MonoBehaviour, iShipDisable
 {
 
-	//Fleet information
+	private ShipClass shipClass;
 
 	//Move - Using navmesh A* pathfinding
 
@@ -28,10 +28,10 @@ public class ComputerShip : MonoBehaviour
 
 	void Start()
 	{
+		shipClass = GetComponent<ShipClass>();
 		camera = Camera.main;
 		movement = GetComponent<MovementController>();
 		weapons = GetComponentInChildren<WeaponsController>();
-
 
 	}
 
@@ -54,6 +54,18 @@ public class ComputerShip : MonoBehaviour
 		if (!playerControlled)
 			return;
 
+
+		if (Input.GetKeyDown(KeyCode.Space)) {
+			StopAllCoroutines();
+			useTargettingSystem = !useTargettingSystem;
+			if(useTargettingSystem)
+			StartCoroutine(AutomatedShoot());
+
+
+
+		}
+
+
 		if (useTargettingSystem)
 			Targetting();
 		else
@@ -63,8 +75,69 @@ public class ComputerShip : MonoBehaviour
 
 	private void Targetting()
 	{
-
 	}
+
+	public IEnumerator AutomatedShoot()
+	{
+		Transform target = null;
+		Rigidbody rb = null;
+
+		if (shipClass.Fleet != null) {
+			foreach (ShipClass s in ShipManager.List) {
+				if (shipClass.Fleet.ships.Contains(s.gameObject))
+					continue;
+				if (s == shipClass)
+					continue;
+				target = s.transform;
+				rb = target.GetComponent<Rigidbody>();
+			}
+
+			while (target != null && weapons != null && transform != null) {
+
+				float distance = Vector3.Distance(transform.position, target.position);
+				float time = distance / 600f;
+				Vector3 lead = rb.velocity * time;
+
+				weapons.Target(target.position + lead);
+				weapons.Fire(target.position + lead);
+				yield return new WaitForSeconds(0.025f);
+			}
+			yield return null;
+		}
+	}
+
+	public IEnumerator AutomatedMove()
+	{
+		Transform target = null;
+		Rigidbody rb = null;
+
+		if (shipClass.Fleet != null) {
+			foreach (ShipClass s in ShipManager.List) {
+				if (shipClass.Fleet.ships.Contains(s.gameObject))
+					continue;
+				if (s == shipClass)
+					continue;
+				target = s.transform;
+				rb = target.GetComponent<Rigidbody>();
+			}
+
+			//Vector3 point = Vector3.
+
+
+			while (target != null && weapons != null && transform != null) {
+
+				float distance = Vector3.Distance(transform.position, target.position);
+				float time = distance / 600f;
+				Vector3 lead = rb.velocity * time;
+
+				weapons.Target(target.position + lead);
+				weapons.Fire(target.position + lead);
+				yield return new WaitForSeconds(0.025f);
+			}
+			yield return null;
+		}
+	}
+
 
 	private void MouseInput()
 	{
@@ -103,4 +176,11 @@ public class ComputerShip : MonoBehaviour
 		movement.Move(forwards, sideways);
 
 	}
+
+	public void Disable()
+	{
+		StopAllCoroutines();
+		Destroy(this);
+	}
+
 }

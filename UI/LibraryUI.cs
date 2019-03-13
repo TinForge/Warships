@@ -18,6 +18,7 @@ public class LibraryUI : MonoBehaviour
 	[SerializeField] public Transform overlay;
 
 
+	[SerializeField] public GameObject shipIcon;
 	[SerializeField] public GameObject shipPanel;
 	[SerializeField] public GameObject classTag;
 	[SerializeField] public GameObject levelTag;
@@ -50,14 +51,21 @@ public class LibraryUI : MonoBehaviour
 				overlay.GetChild(i).SetSiblingIndex(i+1);
 	}
 
-	public static Transform CreateShipPanel(string name)
+	public static Transform CreateShipIcon(string name, Fleet fleet)
 	{
-		GameObject t = Instantiate(instance.shipPanel, instance.overlay);
+		GameObject t = Instantiate(instance.shipIcon, instance.overlay);
 		t.name = name;
+		t.GetComponent<Image>().color = (fleet.playerFleet == true ? Color.green : Color.red);
 		return t.transform;
 	}
 
-	public static Transform CreateShipTag(string name,Transform parent)
+	public static Transform CreateShipPanel(Transform parent)
+	{
+		GameObject t = Instantiate(instance.shipPanel, parent);
+		return t.transform;
+	}
+
+	public static Transform CreateShipTag(string name, Transform parent)
 	{
 		GameObject t = Instantiate(instance.classTag, parent);
 		t.GetComponent<TextMeshProUGUI>().text = name;

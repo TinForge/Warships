@@ -8,13 +8,14 @@ public class UIController : MonoBehaviour, iShipDisable, iHealthChange
 {
 	private ShipClass shipClass;
 
+	private Transform icon;
 	private Transform panel;
 	private Transform classTag;
 	private Transform levelTag;
 	private Transform healthTag;
 	private Transform fleetTag;
 	private Transform distanceTag;
-	private Transform icon;
+	private Transform icon2;
 	private Transform healthBar;
 
 
@@ -31,8 +32,9 @@ public class UIController : MonoBehaviour, iShipDisable, iHealthChange
 
 	public void SpawnUI()
 	{
-		panel = LibraryUI.CreateShipPanel(shipClass.name);
-		icon = LibraryUI.CreateIcon(panel);
+		icon = LibraryUI.CreateShipIcon(shipClass.name, shipClass.Fleet);
+		panel = LibraryUI.CreateShipPanel(icon);
+		icon2 = LibraryUI.CreateIcon(panel);
 		classTag = LibraryUI.CreateShipTag(shipClass.Classification, panel);
 		levelTag = LibraryUI.CreateLevelTag(panel, "Lv " + shipClass.Level);
 		healthTag = LibraryUI.CreateHealthTag(panel);
@@ -41,45 +43,57 @@ public class UIController : MonoBehaviour, iShipDisable, iHealthChange
 		fleetTag = LibraryUI.CreateFleetTag(panel, shipClass.Fleet.name);
 		distanceTag = LibraryUI.CreateDistanceTag(panel);
 		healthBar = LibraryUI.CreateHealthBar(panel);
+
+
+		icon.gameObject.SetActive(false);
+		panel.gameObject.SetActive(false);
 	}
 
 	public void ToggleUI(bool state)
 	{
-		panel.gameObject.SetActive(state);
+		icon.gameObject.SetActive(state);
 	}
 
 
 	void LateUpdate()
 	{
-		if (panel != null) {
-			if (!panel.gameObject.activeSelf)
+		if (icon != null) {
+			if (!icon.gameObject.activeSelf)
 				return;
 
 			float distance = Vector3.Distance(transform.position, Camera.main.transform.position); //PlayerShip.instance.transform.position);
 
-			Vector3 origin = transform.position + Vector3.up * (50); // + distance/1000) ;
-			Vector3 rectPos = Camera.main.WorldToScreenPoint(origin);
-			if (rectPos.z > 0)
-				rectPos.z = distance * LibraryUI.ZScaler;
-			else
-				rectPos = new Vector3(-100, -100, 0);
-			panel.position = rectPos;
+			SetPosition(distance);
 
-			distanceTag.GetComponent<TextMeshProUGUI>().text = distance.ToString("N0") + "m";
+			ScaleIcons(distance);
+
+			RefreshDistance(distance);
 		}
 	}
 
-	/* Clashes with detection system
-	private void OnMouseOver()
+	void SetPosition(float distance)
 	{
-		ToggleUI(true);
+		Vector3 origin = transform.position + Vector3.up * (50); // + distance/1000) ;
+		Vector3 rectPos = Camera.main.WorldToScreenPoint(origin);
+		if (rectPos.z > 0)
+			rectPos.z = distance * LibraryUI.ZScaler;
+		else
+			rectPos = new Vector3(-100, -100, 0);
+		icon.position = rectPos;
 	}
 
-	private void OnMouseExit()
+	void ScaleIcons(float distance)
 	{
-		ToggleUI(false);
+		float lerp = Mathf.InverseLerp(500, 3000, distance);
+		float size = Mathf.Lerp(25, 5f, lerp);
+		icon.GetComponent<RectTransform>().sizeDelta = new Vector2(size, size);
 	}
-	*/
+
+	void RefreshDistance(float distance)
+	{
+		distanceTag.GetComponent<TextMeshProUGUI>().text = distance.ToString("N0") + "m";
+	}
+	
 
 	public void HealthChange(int amount, float ratio)
 	{
@@ -93,8 +107,20 @@ public class UIController : MonoBehaviour, iShipDisable, iHealthChange
 
 	}
 
+	void OnMouseOver()
+	{
+		panel.gameObject.SetActive(true);
+		Cursor.visible = false;
+	}
+
+	void OnMouseExit()
+	{
+		panel.gameObject.SetActive(false);
+		Cursor.visible = true;
+	}
+
 	public void Disable()
 	{
-		panel.GetComponent<FadeAlpha>().Activate();
+		icon.GetComponent<FadeAlpha>().Activate();
 	}
 }

@@ -25,6 +25,12 @@ public class ScopedCamera : MonoBehaviour
 	{
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = true;
+
+		transform.LookAt(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+
+		y = transform.rotation.eulerAngles.x;
+		x = transform.rotation.eulerAngles.y;
+
 	}
 
 	float x = 0;
@@ -32,7 +38,7 @@ public class ScopedCamera : MonoBehaviour
 
 	void Update()
     {
-		x = x + Input.GetAxis("Mouse X") * (1 + (4 * (lerp)));
+		x += Input.GetAxis("Mouse X") * (1 + (4 * (lerp)));
 		y = Mathf.Clamp(y - Input.GetAxis("Mouse Y") * (1 + (4 * (lerp))), -90, 90);
 		transform.rotation = Quaternion.Euler(y, x, 0);
 		transform.localPosition = Vector3.Lerp(transform.localPosition, offset, 0.025f);
