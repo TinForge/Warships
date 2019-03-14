@@ -6,8 +6,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Fleet data, ship level/skill/experience, and base+stat properties
 /// </summary>
-public class ShipClass : MonoBehaviour, iShipDisable
-{
+public class ShipClass : MonoBehaviour, iShipDisable {
 	[SerializeField] private ShipStats Stats;
 
 	//
@@ -32,24 +31,29 @@ public class ShipClass : MonoBehaviour, iShipDisable
 	[SerializeField] private int experience;
 	public int Experience { get { return experience; } }
 
-
 	//
 
-	public int Health { get { return Stats.BaseHealth + ((Stats.MaxHealth - Stats.BaseHealth) /100 * level); } }
+	public int MaxHealth { get { return Stats.BaseHealth + ((Stats.MaxHealth - Stats.BaseHealth) / 100 * level); } }
+
+	public int Health { get { return GetComponent<HealthController> ().Health; } }
 
 	public int Mass { get { return Stats.BaseMass + ((Stats.MaxMass - Stats.BaseMass) / 100 * level); } }
 
 	//
 
-	public float MovementSpeed { get { return Stats.BaseMoveSpeed + ((Stats.MaxMoveSpeed - Stats.BaseMoveSpeed) /100* level * skill); } }
+	public float MovementSpeed { get { return Stats.BaseMoveSpeed + ((Stats.MaxMoveSpeed - Stats.BaseMoveSpeed) / 100 * level * skill); } }
 
-	public float TurnSpeed { get { return Stats.BaseTurnSpeed + ((Stats.MaxTurnSpeed - Stats.BaseTurnSpeed) /100* level * skill); } }
+	public float TurnSpeed { get { return Stats.BaseTurnSpeed + ((Stats.MaxTurnSpeed - Stats.BaseTurnSpeed) / 100 * level * skill); } }
 
 	//
 
-	public float Accuracy { get { return Mathf.Clamp( Stats.BaseAccuracy + ((Stats.MaxAccuracy - Stats.BaseAccuracy) * skill), 0, 0.9f); } }
+	public float Accuracy { get { return Mathf.Clamp (Stats.BaseAccuracy + ((Stats.MaxAccuracy - Stats.BaseAccuracy) * skill), 0, 0.9f); } }
 
 	public int MinEngageDist { get { return Stats.MinEngageDist; } }
+
+	public int WeaponSlots { get { return (1.1f - Skill) * 10; } }
+	public int DamageOutput { get { return (1.1f - Skill) * 10; } } //Get Damage X3 of every cannon?
+	public int Firepower { get { return (1.1f - Skill) * 10; } } //Count as DPM?
 
 	//
 
@@ -59,29 +63,26 @@ public class ShipClass : MonoBehaviour, iShipDisable
 
 	public int HidingDist { get { return Stats.BaseHidingDist + ((Stats.MaxHidingDist - Stats.BaseHidingDist) / 100 * level * skill); } }
 
-	void Awake()
-	{
-		level = Random.Range(1, 10);
+	void Awake () {
+		level = Random.Range (1, 10);
 		//skill = Random.Range(0, 1);
 		skill = 1;
-		if (GetComponent<PlayerShip>())
+		if (GetComponent<PlayerShip> ())
 			skill = 1;
 
-		if (GetComponentInParent<Fleet>() != null)
-			fleet = GetComponentInParent<Fleet>();
+		if (GetComponentInParent<Fleet> () != null)
+			fleet = GetComponentInParent<Fleet> ();
 
-		Debug.Log("ShipClass Awake call");
+		Debug.Log ("ShipClass Awake call");
 	}
 
-	public void Disable()
-	{
-		Destroy(gameObject, 5);
+	public void Disable () {
+		Destroy (gameObject, 5);
 	}
 
-	void OnDestroy()
-	{
-		ShipManager.RemoveShip(this);
-		fleet.UnregisterShip(gameObject);
+	void OnDestroy () {
+		ShipManager.RemoveShip (this);
+		fleet.UnregisterShip (gameObject);
 	}
 
 }

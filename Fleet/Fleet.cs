@@ -3,54 +3,119 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum Status
-{
-Friendly,
-Neutral,
-Hostile
+public enum Status {
+	Friendly,
+	Neutral,
+	Hostile
 }
 
-/// <summary>
-/// Hard stats
-/// idk about dynamic stats.
-/// should this hold the ship list?
-/// </summary>
 [System.Serializable]
-public class FleetClass
-{
-	public FleetClass(Fleet fleet)
-	{
+public class FleetClass {
+	public FleetClass (Fleet fleet) {
 		this.fleet = fleet;
 		//skill = Random.Range(0, 1);
 	}
 
 	Fleet fleet;
 
-	[SerializeField][Range(0, 1)] private float skill;
+	[SerializeField][Range (0, 1)] private float skill;
 	public float Skill { get { return skill; } }
 
 	[SerializeField] private const int orderTimer = 25;
-	public int OrderTimer { get { return Mathf.CeilToInt(orderTimer - (orderTimer * skill)); } }
+	public int OrderTimer { get { return Mathf.CeilToInt (orderTimer - (orderTimer * skill)); } }
 
-	[SerializeField] private int fleetSize;
-	public int FleetSize { get { return fleetSize; } }
+	public int FleetSize { get { return fleet.ships.Count; } }
 
-	[SerializeField] private int healthTotal;
-	public int HealthTotal { get { return HealthTotal; } }
-	[SerializeField] private float healthAve;
-	public float HealthAve { get { return healthAve; } }
+	public int HealthTotal { get { return CalculateHealthTotal (); } }
 
-	[SerializeField] private int levelTotal;
-	public int LevelTotal { get { return levelTotal; } }
-	[SerializeField] private float levelAve;
-	public float LevelAve { get { return levelAve; } }
+	public float HealthAve { get { return CalculateHealthAve (); } }
 
+	public int LevelTotal { get { return CalculateLevelTotal (); } }
+
+	public float LevelAve { get { return CalculateTotalAve (); } }
+
+	public int SkillTotal { get { return CalculateSkillTotal (); } }
+
+	public float SkillAve { get { return CalculateSkillAve (); } }
+
+	public float MobilityTotal { get { return CalculateMobilityTotal (); } }
+
+	public float MobilityAve { get { return CalculateMobilityAve (); } }
+
+	public Vector3 PosAve { get { return (CalculatePosAve ()); } }
+
+	private int CalculateHealthTotal () {
+		int total;
+		foreach (ShipClass ship in ships)
+			total += ship.Health;
+		return total;
+	}
+
+	private float CalculateHealthAve () {
+		float ave;
+		foreach (ShipClass ship in ships)
+			ave += ship.Health;
+		ave = ave / FleetSize;
+		return ave;
+	}
+
+	private int CalculateLevelTotal () {
+		int total;
+		foreach (ShipClass ship in ships)
+			total += ship.Level;
+		return total;
+	}
+
+	private float CalculateTotalAve () {
+		float ave;
+		foreach (ShipClass ship in ships)
+			ave += ship.Level;
+		ave = ave / FleetSize;
+		return ave;
+	}
+
+	private int CalculateSkillTotal () {
+		int total;
+		foreach (ShipClass ship in ships)
+			total += ship.Skill;
+		return total;
+	}
+
+	private float CalculateSkillAve () {
+		float ave;
+		foreach (ShipClass ship in ships)
+			ave += ship.Skill;
+		ave = ave / FleetSize;
+		return ave;
+	}
+
+	private int CalculateMobilityTotal () {
+		int total;
+		foreach (ShipClass ship in ships)
+			total += ship.MovementSpeed;
+		return total;
+	}
+
+	private float CalculateMobilityAve () {
+		float ave;
+		foreach (ShipClass ship in ships)
+			ave += ship.MovementSpeed;
+		ave = ave / FleetSize;
+		return ave;
+	}
+
+	private Vector3 CalculatePosAve () {
+		Vector3 ave;
+		foreach (ShipClass ship in ships)
+			ave += ship.transform.position;
+		ave = ave / FleetSize;
+		return ave;
+	}
 
 }
 
 [System.Serializable]
-public class Fleet : MonoBehaviour
-{
+public class Fleet : MonoBehaviour {
 	public bool playerFleet;
 
 	public new string name;
@@ -60,8 +125,7 @@ public class Fleet : MonoBehaviour
 	public Formation formation;
 	public Strategy strategy;
 
-
-	public List<GameObject> ships;
+	public List<ShipClass> ships;
 	public List<ShipClass> detectedShips;
 
 	//[SerializeField] private Image fleetIcon;
@@ -70,59 +134,28 @@ public class Fleet : MonoBehaviour
 	//public Dictionary<FleetClass, Status> agressors;
 	//public List<FleetClass> oppositionFleets;
 
-
-	void Awake()
-	{
+	void Awake () {
 		transform.name = name + " Fleet";
-		fleetClass = new FleetClass(this);
-		detectedShips = new List<ShipClass>();
+		fleetClass = new FleetClass (this);
+		detectedShips = new List<ShipClass> ();
 	}
 
-	void Start()
-	{
-		for(int i = 0; i < ships.Count; i++){
-			ships[i] = ShipManager.AddShip(ships[i], transform.position + Vector3.right * (i*100) , transform.rotation, transform);
-		}
+	void Start () {
+		InstantiateShips ();
 
-		if (playerFleet) {
-			camPivot = new GameObject();
-			FindObjectOfType<Orbital>().target = camPivot.transform;
-			FindObjectOfType<Orbital>().transform.parent = camPivot.transform;
-		}
+		DirtyCodeStart ();
 	}
 
-	GameObject camPivot;
-	bool scoped;
-
-	void LateUpdate()
-	{
-		if (playerFleet) {
-			Vector3 ave = Vector3.zero;
-			foreach(GameObject ship in ships) {
-				ave += ship.transform.position;
-			}
-			ave /= ships.Count;
-			camPivot.transform.position = Vector3.MoveTowards(camPivot.transform.position, ave + Vector3.up*30, 0.5f);
-
-
-			if (Input.GetKeyDown(KeyCode.F)) {
-				scoped = !scoped;
-				Camera.main.transform.parent.GetComponent<Orbital>().enabled = !scoped;
-				Camera.main.transform.parent.GetComponent<ScopedCamera>().enabled = scoped;
-			}
-
-		}
-		
+	void LateUpdate () {
+		DirtyCode ();
 	}
 
-	public void RegisterShip(GameObject ship)
-	{
-		ships.Add(ship);
+	public void RegisterShip (GameObject ship) {
+		ships.Add (ship);
 	}
 
-	public void UnregisterShip(GameObject ship)
-	{
-		ships.Remove(ship);
+	public void UnregisterShip (GameObject ship) {
+		ships.Remove (ship);
 	}
 
 	//AI ships will be capable of detecting, and identifying other ships
@@ -130,7 +163,6 @@ public class Fleet : MonoBehaviour
 
 	//They need instructions on formation building, and group strategies
 	//A ship by itself will be able to move and fire weapons. Fleet produces directions and targets.
-
 
 	//Strategies will be selected based on odds and skill
 
@@ -142,16 +174,46 @@ public class Fleet : MonoBehaviour
 	//Strategies
 	//Formation positions
 
+}
+
+public void InstantiateShips () {
+	for (int i = 0; i < ships.Count; i++)
+		ships[i] = ShipManager.AddShip (ships[i], transform.position + Vector3.right * (i * 100), transform.rotation, transform); //casting error for gameobject/shipclass
+}
+
+public void DirtyCodeStart () {
+	if (playerFleet) {
+		camPivot = new GameObject ();
+		FindObjectOfType<Orbital> ().target = camPivot.transform;
+		FindObjectOfType<Orbital> ().transform.parent = camPivot.transform;
+	}
+}
+
+GameObject camPivot;
+bool scoped;
+public void DirtyCode () {
+	if (playerFleet) {
+		Vector3 ave = Vector3.zero;
+		foreach (GameObject ship in ships) {
+			ave += ship.transform.position;
+		}
+		ave /= ships.Count;
+		camPivot.transform.position = Vector3.MoveTowards (camPivot.transform.position, ave + Vector3.up * 30, 0.5f);
+
+		if (Input.GetKeyDown (KeyCode.F)) {
+			scoped = !scoped;
+			Camera.main.transform.parent.GetComponent<Orbital> ().enabled = !scoped;
+			Camera.main.transform.parent.GetComponent<ScopedCamera> ().enabled = scoped;
+		}
+
+	}
 
 }
 
-
-public class Strategy
-{
+public class Strategy {
 
 }
 
-public class Formation
-{
+public class Formation {
 
 }

@@ -1,82 +1,73 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System;
 using UnityEngine;
 
-public class HealthController : MonoBehaviour, iDamageable
-{
+public class HealthController : MonoBehaviour, iDamageable {
 	private ShipClass sc;
 
 	[SerializeField] private ParticleSystem damagedEffect;
 	[SerializeField] private GameObject explosionEffect;
 
-	public int MaxHealth { get { return sc.Health; } }
+	public int MaxHealth { get { return sc.MaxHealth; } }
 
-	public int Health { get; set; }
+	public int Health { get; set; } //Sets Shipclass.Health
 
 	public float Ratio { get { return (float) Health / MaxHealth; } }
 
-
-    private void Awake()
-	{
-		sc = GetComponent<ShipClass>();
+	private void Awake () {
+		sc = GetComponent<ShipClass> ();
 		Health = MaxHealth;
 
-		InvokeRepeating("Regenerate", 0, 5);
-		InvokeRepeating("CapsizeCheck", 0, 1);
+		InvokeRepeating ("Regenerate", 0, 5);
+		InvokeRepeating ("CapsizeCheck", 0, 1);
 	}
 
-	public void CapsizeCheck()
-	{
+	public void CapsizeCheck () {
 		float z = transform.eulerAngles.z;
 		if (z > 180)
 			z -= 360;
-		if (Mathf.Abs(z) > 40)
-			Damage(Mathf.RoundToInt(Mathf.Pow(z, 3) * Time.deltaTime));
+		if (Mathf.Abs (z) > 40)
+			Damage (Mathf.RoundToInt (Mathf.Pow (z, 3) * Time.deltaTime));
 	}
 
-	private void OnCollisionEnter(Collision collision)
-	{
+	private void OnCollisionEnter (Collision collision) {
 		if (collision.transform.tag == "Ship")
 			if (collision.relativeVelocity.magnitude > 5)
-				Damage((int) (collision.relativeVelocity.magnitude * (collision.rigidbody.mass / 1000)));
+				Damage ((int) (collision.relativeVelocity.magnitude * (collision.rigidbody.mass / 1000)));
 	}
 
-	private void Regenerate()
-	{
-		int regen = Mathf.RoundToInt(MaxHealth * 0.01f);
+	private void Regenerate () {
+		int regen = Mathf.RoundToInt (MaxHealth * 0.01f);
 
 		int delta = Health;
-		Health = Mathf.Clamp(Health + regen, 0, MaxHealth);
+		Health = Mathf.Clamp (Health + regen, 0, MaxHealth);
 		delta -= Health;
 
 		if (delta < 0)
-		foreach (iHealthChange i in GetComponentsInChildren<iHealthChange>())
-			i.HealthChange(delta, Ratio);
+			foreach (iHealthChange i in GetComponentsInChildren<iHealthChange> ())
+				i.HealthChange (delta, Ratio);
 	}
 
-	public void Damage(int damage)
-	{
-		Health = Mathf.Clamp(Health - damage, 0, MaxHealth);
+	public void Damage (int damage) {
+		Health = Mathf.Clamp (Health - damage, 0, MaxHealth);
 
-		foreach (iHealthChange i in GetComponentsInChildren<iHealthChange>())
-			i.HealthChange(damage, Ratio);
+		foreach (iHealthChange i in GetComponentsInChildren<iHealthChange> ())
+			i.HealthChange (damage, Ratio);
 
-		if (Health == 0) 
-			DisableShipControllers();
+		if (Health == 0)
+			DisableShipControllers ();
 
 	}
 
-	private void DisableShipControllers()
-	{
-		foreach (iShipDisable i in GetComponentsInChildren<iShipDisable>())
-			i.Disable();
+	private void DisableShipControllers () {
+		foreach (iShipDisable i in GetComponentsInChildren<iShipDisable> ())
+			i.Disable ();
 
-		ObjectPooler.instance.Instantiate(explosionEffect, transform.position, Quaternion.identity);
+		ObjectPooler.instance.Instantiate (explosionEffect, transform.position, Quaternion.identity);
 
-		CancelInvoke();
-		Destroy(this);
+		CancelInvoke ();
+		Destroy (this);
 	}
-
 
 }
