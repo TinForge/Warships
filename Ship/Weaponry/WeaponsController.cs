@@ -43,6 +43,16 @@ public class WeaponsController : MonoBehaviour, iShipDisable
 	[HideInInspector] public List<WeaponPlatform> platforms;
 	[SerializeField] private Transform platformParent;
 
+	public int FirepowerTotal { get { return CalculateFirepowerTotal(); } }
+
+	private int CalculateFirepowerTotal()
+	{
+		int total = 0;
+		foreach (WeaponPlatform platform in platforms)
+			total += platform.weapon.Firepower;
+		return total;
+	}
+
 	void Awake()
 	{
 		shipClass = GetComponent<ShipClass>();

@@ -50,10 +50,8 @@ public class ShipClass : MonoBehaviour, iShipDisable {
 	public float Accuracy { get { return Mathf.Clamp (Stats.BaseAccuracy + ((Stats.MaxAccuracy - Stats.BaseAccuracy) * skill), 0, 0.9f); } }
 
 	public int MinEngageDist { get { return Stats.MinEngageDist; } }
-
-	public int WeaponSlots { get { return (1.1f - Skill) * 10; } }
-	public int DamageOutput { get { return (1.1f - Skill) * 10; } } //Get Damage X3 of every cannon?
-	public int Firepower { get { return (1.1f - Skill) * 10; } } //Count as DPM?
+	
+	public int Firepower { get { return GetComponent<WeaponsController>().FirepowerTotal; } }
 
 	//
 
@@ -82,7 +80,7 @@ public class ShipClass : MonoBehaviour, iShipDisable {
 
 	void OnDestroy () {
 		ShipManager.RemoveShip (this);
-		fleet.UnregisterShip (gameObject);
+		fleet.UnregisterShip (this, fleet.Friendlies);
 	}
 
 }

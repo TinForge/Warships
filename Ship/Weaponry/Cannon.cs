@@ -38,6 +38,8 @@ public class Cannon : MonoBehaviour, iWeapon
 	float cannonAngle;
 	float speedRateY;
 
+	public int Firepower { get { return projectileData.damage; } }
+
 	void Awake()
 	{
 		projectileData.owner = transform.GetComponentInParent<ShipClass>().transform;

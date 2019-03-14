@@ -83,13 +83,10 @@ public class ComputerShip : MonoBehaviour, iShipDisable
 		Rigidbody rb = null;
 
 		if (shipClass.Fleet != null) {
-			foreach (ShipClass s in ShipManager.List) {
-				if (shipClass.Fleet.ships.Contains(s.gameObject))
-					continue;
-				if (s == shipClass)
-					continue;
-				target = s.transform;
-				rb = target.GetComponent<Rigidbody>();
+			int i = Random.Range(0, shipClass.Fleet.Enemies.Count-1);
+			ShipClass enemy = shipClass.Fleet.Enemies[i];
+			target = enemy.transform;
+			rb = target.GetComponent<Rigidbody>();
 			}
 
 			while (target != null && weapons != null && transform != null) {
@@ -104,7 +101,7 @@ public class ComputerShip : MonoBehaviour, iShipDisable
 			}
 			yield return null;
 		}
-	}
+	
 
 	public IEnumerator AutomatedMove()
 	{
@@ -113,7 +110,7 @@ public class ComputerShip : MonoBehaviour, iShipDisable
 
 		if (shipClass.Fleet != null) {
 			foreach (ShipClass s in ShipManager.List) {
-				if (shipClass.Fleet.ships.Contains(s.gameObject))
+				if (shipClass.Fleet.Friendlies.Contains(s))
 					continue;
 				if (s == shipClass)
 					continue;

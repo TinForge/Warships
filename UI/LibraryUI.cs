@@ -55,7 +55,7 @@ public class LibraryUI : MonoBehaviour
 	{
 		GameObject t = Instantiate(instance.shipIcon, instance.overlay);
 		t.name = name;
-		t.GetComponent<Image>().color = (fleet.playerFleet == true ? Color.green : Color.red);
+		t.GetComponent<Image>().color = (fleet.Player == true ? Color.green : Color.red);
 		return t.transform;
 	}
 

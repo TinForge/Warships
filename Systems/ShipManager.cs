@@ -23,9 +23,9 @@ public class ShipManager : MonoBehaviour {
 	}
 
 	public static ShipClass AddShip (GameObject ship, Vector3 position, Quaternion rotation, Transform parent) {
-		ship = Instantiate (ship, position, rotation, parent).GetComponent<ShipClass> ();
-		List.Add (ship);
-		return ship;
+		ShipClass shipClass = Instantiate (ship, position, rotation, parent).GetComponent<ShipClass> ();
+		List.Add (shipClass);
+		return shipClass;
 	}
 
 	public static void RemoveShip (ShipClass ship) {
@@ -37,18 +37,22 @@ public class ShipManager : MonoBehaviour {
 	}
 
 	public static List<ShipClass> ListAllFriendlyShips (Fleet fleet) {
-		return fleet.ships;
+		return fleet.Friendlies;
 	}
 
-	public static List<ShipClass> ListAllFriendlyShipsOther (Fleet fleet) {
-		return fleet.ships;
+	public static List<ShipClass> ListAllFriendlyShipsOther (Fleet fleet, ShipClass self) {
+		List<ShipClass> friendlies = fleet.Friendlies;
+		friendlies.Remove(self);
+		return friendlies;
 	}
 
-	/* 
-		public static List<ShipClass> ListAllEnemyShips (Fleet fleet) {
-			List<ShipClass> enemies = //clone list
-			return fleet.ships;
-		}
-	*/
+	public static List<ShipClass> ListAllEnemyShips (Fleet fleet) {
+		List<ShipClass> enemies = new List<ShipClass>();
+		foreach (ShipClass ship in List)
+			if (!fleet.Friendlies.Contains(ship))
+				enemies.Add(ship);
+		return enemies;
+	}
+	
 
 }
