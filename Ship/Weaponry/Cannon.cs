@@ -67,7 +67,8 @@ public class Cannon : MonoBehaviour, iWeapon
 
 		float range = Vector3.Distance(Camera.main.transform.position, exit.position);
 		float magnitude = Mathf.Lerp(0, 2, 500/range);
-		EZCameraShake.CameraShaker.Instance.ShakeOnce(2, 2.5f, 0.25f, 0.6f);
+
+		EZCameraShake.CameraShaker.Instance.ShakeOnce(0.5f, 2.5f, 0.15f, 0.3f);
 
 		StopCoroutine(Salvo(point, velocity, accuracy));
 		StartCoroutine(Salvo(point, velocity, accuracy));

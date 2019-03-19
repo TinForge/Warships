@@ -119,12 +119,12 @@ public class PlayerShip : MonoBehaviour, iShipDisable, iHealthChange
 		EZCameraShake.CameraShaker.Instance.ShakeOnce(3, 5, 1f, 5f);
 	}
 
-	public void HealthChange(int amount, float ratio)
+	public void HealthChange(int current, int delta, float ratio)
 	{
-		if (amount < 1)
+		if (delta < 1)
 			return;
 
-		float magnitude = Mathf.Lerp(100, 750, amount) / 200;   //magnitude based on damage
+		float magnitude = Mathf.Lerp(100, 750, delta) / 200;   //magnitude based on damage
 		float roughness = Mathf.Lerp(1, 5, ratio);                  //roughness based on health remaining
 		EZCameraShake.CameraShaker.Instance.ShakeOnce(magnitude, roughness, 0.5f, 0.5f);
 	}

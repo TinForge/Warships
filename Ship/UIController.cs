@@ -22,12 +22,13 @@ public class UIController : MonoBehaviour, iShipDisable, iHealthChange
 	void Awake()
 	{
 		shipClass = GetComponent<ShipClass>();
+		SpawnUI();
+		ToggleUI(false);
 	}
 
 	void Start()
 	{
-		SpawnUI();
-		ToggleUI(false);
+		healthTag.GetComponent<TextMeshProUGUI>().text = GetComponent<HealthController>().Health + "";
 	}
 
 	public void SpawnUI()
@@ -95,15 +96,15 @@ public class UIController : MonoBehaviour, iShipDisable, iHealthChange
 	}
 	
 
-	public void HealthChange(int amount, float ratio)
+	public void HealthChange(int current, int delta, float ratio)
 	{
 		healthTag.GetComponent<TextMeshProUGUI>().text = GetComponent<HealthController>().Health + "";
 		healthBar.GetComponent<Slider>().value = ratio;
 
-		if(amount > 0)
-			LibraryUI.CreateDamageCounter(transform, amount);
-		else
-			LibraryUI.CreateHealCounter(transform, -amount);
+		if(delta > 0)
+			LibraryUI.CreateDamageCounter(transform, delta);
+		else if (delta < 0)
+			LibraryUI.CreateHealCounter(transform, -delta);
 
 	}
 

@@ -79,29 +79,35 @@ public class ComputerShip : MonoBehaviour, iShipDisable
 
 	public IEnumerator AutomatedShoot()
 	{
-		Transform target = null;
+		ShipClass target = null;
 		Rigidbody rb = null;
 
+		if (shipClass.Fleet.Enemies.Count < 1) {
+			useTargettingSystem = false;
+			yield break;
+		}
+
+		int random = Random.Range(0, shipClass.Fleet.Enemies.Count - 1);
+
 		if (shipClass.Fleet != null) {
-			int i = Random.Range(0, shipClass.Fleet.Enemies.Count-1);
-			ShipClass enemy = shipClass.Fleet.Enemies[i];
-			target = enemy.transform;
-			rb = target.GetComponent<Rigidbody>();
+				target = shipClass.Fleet.Enemies[random];
+				rb = target.GetComponent<Rigidbody>();
 			}
 
-			while (target != null && weapons != null && transform != null) {
+			while (target != null && transform != null && target.Alive && shipClass.Alive) {
 
-				float distance = Vector3.Distance(transform.position, target.position);
+				float distance = Vector3.Distance(transform.position, target.transform.position);
 				float time = distance / 600f;
 				Vector3 lead = rb.velocity * time;
 
-				weapons.Target(target.position + lead);
-				weapons.Fire(target.position + lead);
+				weapons.Target(target.transform.position + lead);
+				weapons.Fire(target.transform.position + lead);
 				yield return new WaitForSeconds(0.025f);
 			}
-			yield return null;
-		}
-	
+
+		StartCoroutine(AutomatedShoot());
+		yield return null;
+	}
 
 	public IEnumerator AutomatedMove()
 	{

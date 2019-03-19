@@ -53,14 +53,14 @@ public class FleetClass {
 	private int CalculateLevelTotal () {
 		int total = 0;
 		foreach (ShipClass ship in Fleet.Friendlies)
-			total += ship.Level;
+				total += ship.Level;
 		return total;
 	}
 
 	private float CalculateSkillTotal () {
 		float total = 0;
 		foreach (ShipClass ship in Fleet.Friendlies)
-			total += ship.Skill;
+				total += ship.Skill;
 		return total;
 	}
 
@@ -68,7 +68,7 @@ public class FleetClass {
 	{
 		int total = 0;
 		foreach (ShipClass ship in Fleet.Friendlies)
-			total += ship.Health;
+				total += ship.Health;
 		return total;
 	}
 
@@ -76,14 +76,14 @@ public class FleetClass {
 	{
 		int total = 0;
 		foreach (ShipClass ship in Fleet.Friendlies)
-			total += ship.Firepower;
+				total += ship.Firepower;
 		return total;
 	}
 
 	private float CalculateMobilityTotal () {
 		float total = 0;
 		foreach (ShipClass ship in Fleet.Friendlies)
-			total += ship.MovementSpeed;
+				total += ship.MovementSpeed;
 		return total;
 	}
 	
@@ -91,7 +91,7 @@ public class FleetClass {
 	{
 		float lowest = Mathf.Infinity;
 		foreach (ShipClass ship in Fleet.Friendlies)
-			if (lowest > ship.MovementSpeed)
+				if (lowest > ship.MovementSpeed)
 				lowest = ship.MovementSpeed;
 		return lowest;
 	}
@@ -100,7 +100,8 @@ public class FleetClass {
 		Vector3 ave = Vector3.zero;
 		foreach (ShipClass ship in Fleet.Friendlies)
 			ave += ship.transform.position;
-		ave = ave / FleetSize;
+		if(FleetSize > 0)
+			ave = ave / FleetSize;
 		return ave;
 	}
 
@@ -109,7 +110,7 @@ public class FleetClass {
 [System.Serializable]
 public class Fleet : MonoBehaviour
 {
-	public bool Player { get; set; }
+	public bool Player; // { get; set; }
 
 	public string Name { get; set; }
 
@@ -121,6 +122,8 @@ public class Fleet : MonoBehaviour
 	[SerializeField] private List<GameObject> spawnShips;
 	public List<ShipClass> Friendlies { get; set; }
 	public List<ShipClass> Enemies { get; set; }
+	[SerializeField] private List<ShipClass> FRIENDS_DISPLAY;
+	[SerializeField] private List<ShipClass> ENEMIES_DISPLAY;
 
 	//[SerializeField] private Image fleetIcon;
 	//public Image FleetIcon { get { return fleetIcon; } }
@@ -134,12 +137,13 @@ public class Fleet : MonoBehaviour
 		FleetClass = new FleetClass(this);
 		Friendlies = new List<ShipClass>();
 		Enemies = new List<ShipClass>();
+		FRIENDS_DISPLAY = Friendlies;
+		ENEMIES_DISPLAY = Enemies;
 	}
 
 	void Start()
 	{
-		InstantiateShips();
-
+		InstantiateFleetShips();
 		DirtyCodeStart();
 	}
 
@@ -148,18 +152,25 @@ public class Fleet : MonoBehaviour
 		DirtyCode();
 	}
 
+	//
+
 	public void RegisterShip(ShipClass ship, List<ShipClass> list)
 	{
+		if (list.Contains(ship)) {
+			ship.GetComponent<UIController>().ToggleUI(true);
+			return;
+		}
+
 		list.Add(ship);
+		ship.GetComponent<UIController>().ToggleUI(true);
 	}
 
 	public void UnregisterShip(ShipClass ship, List<ShipClass> list)
 	{
 		list.Remove(ship);
+		ship.GetComponent<UIController>().ToggleUI(false);
 	}
 
-	//AI ships will be capable of detecting, and identifying other ships
-	//As a fleet, this information should be shared.
 
 	//They need instructions on formation building, and group strategies
 	//A ship by itself will be able to move and fire weapons. Fleet produces directions and targets.
@@ -175,10 +186,12 @@ public class Fleet : MonoBehaviour
 	//Formation positions
 
 
-	public void InstantiateShips()
+	public void InstantiateFleetShips()
 	{
-		for (int i = 0; i < spawnShips.Count; i++)
-			Friendlies[i] = ShipManager.AddShip(spawnShips[i], transform.position + Vector3.right * (i * 100), transform.rotation, transform);
+		for (int i = 0; i < spawnShips.Count; i++) {
+			ShipClass spawn = ShipManager.AddShip(spawnShips[i], transform.position + Vector3.right * (i * 100), transform.rotation, transform);
+			RegisterShip(spawn, Friendlies);
+		}
 	}
 
 	public void DirtyCodeStart()
@@ -195,17 +208,21 @@ public class Fleet : MonoBehaviour
 	public void DirtyCode()
 	{
 		if (Player) {
-			camPivot.transform.position = Vector3.MoveTowards(camPivot.transform.position, FleetClass.PosAve + Vector3.up * 30, 2f);
 
-			if (Input.GetKeyDown(KeyCode.F)) {
-				scoped = !scoped;
-				Camera.main.transform.parent.GetComponent<Orbital>().enabled = !scoped;
-				Camera.main.transform.parent.GetComponent<ScopedCamera>().enabled = scoped;
-			}
+			Vector3 ave = FleetClass.PosAve;
+			camPivot.transform.position = Vector3.MoveTowards(camPivot.transform.position, ave + Vector3.up * 30, 2.5f);
 
+				if (Input.GetKeyDown(KeyCode.F)) {
+					scoped = !scoped;
+					Camera.main.transform.parent.GetComponent<Orbital>().enabled = !scoped;
+					Camera.main.transform.parent.GetComponent<ScopedCamera>().enabled = scoped;
+				}
+
+			
 		}
-
 	}
+
+
 
 	public class Strategy
 	{

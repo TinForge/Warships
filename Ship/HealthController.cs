@@ -4,23 +4,30 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class HealthController : MonoBehaviour, iDamageable {
-	private ShipClass sc;
+
+	private ShipClass shipClass;
 
 	[SerializeField] private ParticleSystem damagedEffect;
 	[SerializeField] private GameObject explosionEffect;
 
-	public int MaxHealth { get { return sc.MaxHealth; } }
+	public int MaxHealth { get { return shipClass.MaxHealth; } }
 
-	public int Health { get; set; } //Sets Shipclass.Health
+	public int Health { get; set; }
 
 	public float Ratio { get { return (float) Health / MaxHealth; } }
 
 	private void Awake () {
-		sc = GetComponent<ShipClass> ();
+		shipClass = GetComponent<ShipClass> ();
 		Health = MaxHealth;
 
-		InvokeRepeating ("Regenerate", 0, 5);
-		InvokeRepeating ("CapsizeCheck", 0, 1);
+		StartCoroutine(Regenerate());
+		InvokeRepeating ("CapsizeCheck", 1, 0.5f);
+	}
+
+	void Start()
+	{
+		foreach (iHealthChange i in GetComponentsInChildren<iHealthChange>())
+			i.HealthChange(Health, 0, Ratio);
 	}
 
 	public void CapsizeCheck () {
@@ -37,23 +44,50 @@ public class HealthController : MonoBehaviour, iDamageable {
 				Damage ((int) (collision.relativeVelocity.magnitude * (collision.rigidbody.mass / 1000)));
 	}
 
-	private void Regenerate () {
-		int regen = Mathf.RoundToInt (MaxHealth * 0.01f);
+	private IEnumerator Regenerate()
+	{
+		int healthStamp = Health;
+		int counter = 0;
 
-		int delta = Health;
-		Health = Mathf.Clamp (Health + regen, 0, MaxHealth);
-		delta -= Health;
+		while (shipClass != null) 
+		{
+			if (Health == MaxHealth)
+				yield return null;
 
-		if (delta < 0)
-			foreach (iHealthChange i in GetComponentsInChildren<iHealthChange> ())
-				i.HealthChange (delta, Ratio);
+			if (healthStamp == Health) 
+			{
+				counter++;
+			}
+			else 
+			{
+				counter = 0;
+				healthStamp = Health;
+			}
+
+			if (counter > 10) 
+			{
+				int regen = Mathf.RoundToInt(MaxHealth * 0.01f);
+
+				int delta = Health;
+				Health = Mathf.Clamp(Health + regen, 0, MaxHealth);
+				delta -= Health;
+
+				if (delta < 0)
+					foreach (iHealthChange i in GetComponentsInChildren<iHealthChange>())
+						i.HealthChange(Health, delta, Ratio);
+
+				healthStamp = Health;
+			}
+			yield return new WaitForSeconds(1);
+		}
+		yield return null;
 	}
 
 	public void Damage (int damage) {
 		Health = Mathf.Clamp (Health - damage, 0, MaxHealth);
 
 		foreach (iHealthChange i in GetComponentsInChildren<iHealthChange> ())
-			i.HealthChange (damage, Ratio);
+			i.HealthChange (Health, damage, Ratio);
 
 		if (Health == 0)
 			DisableShipControllers ();

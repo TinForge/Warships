@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface iHealthChange
 {
-	void HealthChange(int amount, float ratio);
+	void HealthChange(int current, int delta, float ratio);
 }

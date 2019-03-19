@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShipManager : MonoBehaviour {
-	private static ShipManager instance;
+public class ShipManager : MonoBehaviour
+{
 
+	private static ShipManager instance;
 	public static List<ShipClass> List;
 
 	void Awake () {
@@ -13,14 +14,9 @@ public class ShipManager : MonoBehaviour {
 		instance = this;
 
 		List = new List<ShipClass> ();
-
-		foreach (ShipClass s in FindObjectsOfType<ShipClass> ())
-			List.Add (s);
 	}
 
-	void Start () {
-		Debug.Log ("ShipManager Start");
-	}
+	//
 
 	public static ShipClass AddShip (GameObject ship, Vector3 position, Quaternion rotation, Transform parent) {
 		ShipClass shipClass = Instantiate (ship, position, rotation, parent).GetComponent<ShipClass> ();
@@ -30,7 +26,13 @@ public class ShipManager : MonoBehaviour {
 
 	public static void RemoveShip (ShipClass ship) {
 		List.Remove (ship);
+		foreach (Fleet f in FleetManager.List) {
+			f.Enemies.Remove(ship);
+			f.Friendlies.Remove(ship);
+		}
 	}
+
+	//
 
 	public static List<ShipClass> ListAllShips () {
 		return List;

@@ -26,8 +26,13 @@ public class MainPlayer : MonoBehaviour {
 	{
 		GUI.color = Color.black;
 		GUI.Label(new Rect(100, 20, 250, 25), "Press R to restart");
-		GUI.Label(new Rect(100, 40, 250, 25), "Press F to toggle view mode");
-		GUI.Label(new Rect(100, 60, 250, 25), "Press Space to toggle target lock mode");
+		GUI.Label(new Rect(100, 40, 250, 25), "Press F to toggle camera mode");
+		GUI.Label(new Rect(100, 60, 250, 25), "Press Space to toggle automatic firing mode");
+
+		GUIStyle style = new GUIStyle();
+		style.fontSize = 30;
+		style.alignment = TextAnchor.MiddleCenter;
+		GUI.Label(new Rect((Screen.width/2)-400, 40, 800, 40), "Naval Fleet Development",style);
 	}
 
 

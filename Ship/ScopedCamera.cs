@@ -11,7 +11,7 @@ public class ScopedCamera : MonoBehaviour
 
 	[SerializeField] private float lerp = 1f;
 	[SerializeField] private float distance = 15;
-	[SerializeField] private float minDistance = 5f;
+	[SerializeField] private float minDistance = 3f;
 	[SerializeField] private float maxDistance = 15f;
 
 
@@ -28,8 +28,8 @@ public class ScopedCamera : MonoBehaviour
 
 		transform.LookAt(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 
-		y = transform.rotation.eulerAngles.x;
-		x = transform.rotation.eulerAngles.y;
+		//y = transform.rotation.eulerAngles.x;
+		//x = transform.rotation.eulerAngles.y;
 
 	}
 

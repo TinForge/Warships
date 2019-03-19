@@ -6,7 +6,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Fleet data, ship level/skill/experience, and base+stat properties
 /// </summary>
-public class ShipClass : MonoBehaviour, iShipDisable {
+public class ShipClass : MonoBehaviour, iHealthChange, iShipDisable {
 	[SerializeField] private ShipStats Stats;
 
 	//
@@ -35,7 +35,9 @@ public class ShipClass : MonoBehaviour, iShipDisable {
 
 	public int MaxHealth { get { return Stats.BaseHealth + ((Stats.MaxHealth - Stats.BaseHealth) / 100 * level); } }
 
-	public int Health { get { return GetComponent<HealthController> ().Health; } }
+	public int Health { get; set; }
+
+	public bool Alive { get { return Health > 0? true:false; } }
 
 	public int Mass { get { return Stats.BaseMass + ((Stats.MaxMass - Stats.BaseMass) / 100 * level); } }
 
@@ -61,26 +63,33 @@ public class ShipClass : MonoBehaviour, iShipDisable {
 
 	public int HidingDist { get { return Stats.BaseHidingDist + ((Stats.MaxHidingDist - Stats.BaseHidingDist) / 100 * level * skill); } }
 
+	//
+
 	void Awake () {
 		level = Random.Range (1, 10);
-		//skill = Random.Range(0, 1);
 		skill = 1;
+		//skill = Random.Range(0, 1);
+
 		if (GetComponent<PlayerShip> ())
 			skill = 1;
 
 		if (GetComponentInParent<Fleet> () != null)
 			fleet = GetComponentInParent<Fleet> ();
 
-		Debug.Log ("ShipClass Awake call");
 	}
 
-	public void Disable () {
+	public void HealthChange(int current, int delta, float ratio)
+	{
+		Health = current;
+	}
+
+	public void Disable ()
+	{
+		ShipManager.RemoveShip(this);
 		Destroy (gameObject, 5);
 	}
 
 	void OnDestroy () {
-		ShipManager.RemoveShip (this);
-		fleet.UnregisterShip (this, fleet.Friendlies);
 	}
 
 }
